@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { JWTPayload } from './../interfaces/jwt.interface';
 import { ConfigService } from '@nestjs/config';
-import { AUTH_TOKEN } from '../consts';
+import { ACCESS_TOKEN } from '../consts';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -16,23 +16,24 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       ignoreExpiration: false,
-      secretOrKey: configService.get('JWT_SECRET'),
+      secretOrKey: configService.get('ACCESS_TOKEN_JWT_KEY'),
     });
   }
 
   private static extractJWT(req: Request): string | null {
-    const authHeader = req.headers.authorization;
+    // uncomment this if you want to use the authorization header to send the token
+    // const authHeader = req.headers.authorization;
 
-    if (authHeader && authHeader.split(' ')[0] === 'Bearer') {
-      return authHeader.split(' ')[1];
-    }
+    // if (authHeader && authHeader.split(' ')[0] === 'Bearer') {
+    //   return authHeader.split(' ')[1];
+    // }
 
     if (
       req.cookies &&
-      AUTH_TOKEN in req.cookies &&
-      req.cookies.auth_token.length > 0
+      ACCESS_TOKEN in req.cookies &&
+      req.cookies[ACCESS_TOKEN].length > 0
     ) {
-      return req.cookies.auth_token;
+      return req.cookies[ACCESS_TOKEN];
     }
 
     return null;
