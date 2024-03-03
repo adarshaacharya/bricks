@@ -12,7 +12,7 @@ import {
 import { AuthService } from './auth.service';
 import { SignupDto } from './dtos/signup';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import AccessTokenAuthGuard from './guards/access-token.guard';
+import { AccessTokenGuard } from './guards/access-token.guard';
 import { Response } from 'express';
 import {
   ACCESS_TOKEN,
@@ -21,12 +21,30 @@ import {
   REFRESH_TOKEN_COOKIE_MAX_AGE,
 } from './consts';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
+import { LoginDto } from './dtos/login';
+import { AuthRequestType } from 'src/types/AuthRequestType';
 
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/signup')
+  @ApiOperation({ summary: 'Sign Up User' })
+  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 403, description: 'Email already register' })
+  @ApiBody({ type: SignupDto, description: 'User Data' })
+  @ApiConsumes('multipart/form-data')
   async signup(@Body() signupDto: SignupDto) {
     return this.authService.signup(signupDto);
   }
@@ -35,6 +53,12 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('/login')
+  @ApiOperation({ summary: 'Sign in' })
+  @ApiBadRequestResponse({ description: 'Invalid request body' })
+  @ApiResponse({ status: 200, description: 'Successful login' })
+  @ApiResponse({ status: 403, description: 'Forbidden - User not logged' })
+  @ApiBody({ type: LoginDto, description: 'User Data' })
+  @ApiConsumes('multipart/form-data', 'application/json')
   async login(@Request() req, @Res() res: Response) {
     const response = await this.authService.login(req.user);
 
@@ -59,9 +83,12 @@ export class AuthController {
     });
   }
 
-  @UseGuards(AccessTokenAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Get()
-  me(@Request() req) {
+  @ApiOperation({ summary: 'User Info' })
+  @ApiResponse({ status: 200, description: 'User info' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  me(@Request() req: AuthRequestType) {
     return {
       message: 'User info',
       data: req.user,
@@ -69,8 +96,10 @@ export class AuthController {
     };
   }
 
-  @UseGuards(AccessTokenAuthGuard)
+  @UseGuards(AccessTokenGuard)
   @Post('/logout')
+  @ApiOperation({ summary: 'Logout' })
+  @ApiResponse({ status: 200, description: 'Successful logout' })
   async logout(@Request() req, @Res() res: Response) {
     res.clearCookie(REFRESH_TOKEN);
     res.clearCookie(ACCESS_TOKEN);
@@ -82,6 +111,10 @@ export class AuthController {
 
   @UseGuards(RefreshTokenGuard)
   @Post('/refresh_token')
+  @ApiOperation({ summary: 'Refresh Token' })
+  @ApiSecurity('refresh_token')
+  @ApiResponse({ status: 200, description: 'Token refreshed', type: String })
+  @ApiResponse({ status: 401, description: 'Unauthorized from refresh' })
   async refreshToken(
     @Body('refresh_token') refreshToken: string,
     @Res() res: Response,

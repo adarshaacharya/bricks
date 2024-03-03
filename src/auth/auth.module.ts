@@ -5,7 +5,7 @@ import { PassHasherModule } from 'src/pass-hasher/pass-hasher.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
@@ -13,7 +13,7 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
   providers: [
     AuthService,
     LocalStrategy,
-    JwtStrategy,
+    AccessTokenStrategy,
     ConfigService,
     RefreshTokenStrategy,
   ],

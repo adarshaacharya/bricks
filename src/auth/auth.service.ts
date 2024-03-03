@@ -10,6 +10,7 @@ import { SignupDto } from './dtos/signup';
 import { User } from '@prisma/client';
 import { JWTPayload } from './interfaces/jwt.interface';
 import { ConfigService } from '@nestjs/config';
+
 @Injectable()
 export class AuthService {
   constructor(

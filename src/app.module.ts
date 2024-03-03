@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { PassHasherModule } from './pass-hasher/pass-hasher.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PassHasherModule } from './pass-hasher/pass-hasher.module';
     PrismaModule,
     AuthModule,
     PassHasherModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
