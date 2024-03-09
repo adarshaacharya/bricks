@@ -56,7 +56,7 @@ export class UserController {
     return {
       success: true,
       message: 'me',
-      data: await this.userService.me(req.user.id),
+      data: await this.userService.getUserById(req.user.id),
     };
   }
 

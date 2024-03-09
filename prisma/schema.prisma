@@ -16,13 +16,70 @@ enum UserRole {
 }
 
 model User {
-  id   String @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   name      String
   password  String
-  role      UserRole @default(Client)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      UserRole   @default(Client)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  schedule  Schedule[]
 
   @@map("users")
 }
+
+model Schedule {
+  id     String   @id @default(uuid())
+  date   DateTime
+  hour   String
+  userId String
+  user   User     @relation(fields: [userId], references: [id])
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("schedules")
+}
+
+model Property {
+  id        String   @id @default(uuid())
+  sold      Boolean  @default(false)
+  size      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categoryId String
+  category   Category   @relation(fields: [categoryId], references: [id])
+  schedule   Schedule[]
+  address    Address @relation(fields: [addressId], references: [id])
+  addressId  String @unique
+
+  @@map("real_estates")
+}
+
+model Address {
+  id         String       @id @default(uuid())
+  street     String
+  zipCode    String
+  number     Int
+  city       String
+  state      String
+  property Property?
+
+  @@map("addresses")
+}
+
+
+model Category {
+  id         String       @id @default(uuid())
+  name       String       @unique
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  property Property[]
+
+  @@map("categories")
+}
+

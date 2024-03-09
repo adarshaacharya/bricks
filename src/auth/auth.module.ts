@@ -8,6 +8,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   providers: [
@@ -20,6 +21,7 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
   controllers: [AuthController],
   imports: [
     PassHasherModule,
+    UserModule,
     PrismaModule,
     JwtModule.registerAsync({
       inject: [ConfigService],

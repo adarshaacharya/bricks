@@ -76,24 +76,4 @@ export class UserService {
       throw new Error(error);
     }
   }
-
-  async me(id: string) {
-    try {
-      const user = await this.prismaService.user.findUnique({
-        where: {
-          id,
-        },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-        },
-      });
-      return user;
-    } catch (error) {
-      console.log(error);
-      throw new Error(error);
-    }
-  }
 }

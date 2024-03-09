@@ -6,6 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { PassHasherModule } from './pass-hasher/pass-hasher.module';
 import { UserModule } from './user/user.module';
+import { PropertyModule } from './property/property.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { UserModule } from './user/user.module';
     AuthModule,
     PassHasherModule,
     UserModule,
+    PropertyModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

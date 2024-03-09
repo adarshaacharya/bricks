@@ -32,11 +32,15 @@ import {
 } from '@nestjs/swagger';
 import { LoginDto } from './dtos/login';
 import { AuthRequestType } from 'src/types/AuthRequestType';
+import { UserService } from 'src/user/user.service';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post('/signup')
   @ApiOperation({ summary: 'Sign Up User' })
@@ -88,10 +92,11 @@ export class AuthController {
   @ApiOperation({ summary: 'User Info' })
   @ApiResponse({ status: 200, description: 'User info' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  me(@Request() req: AuthRequestType) {
+  async me(@Request() req: AuthRequestType) {
+    const user = await this.userService.getUserById(req.user.id);
     return {
       message: 'User info',
-      data: req.user,
+      data: user,
       success: true,
     };
   }
