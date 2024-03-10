@@ -53,33 +53,31 @@ model Property {
 
   categoryId String
   category   Category   @relation(fields: [categoryId], references: [id])
-  schedule   Schedule[]
-  address    Address @relation(fields: [addressId], references: [id])
-  addressId  String @unique
+  schedules  Schedule[]
+  address    Address?   @relation(fields: [addressId], references: [id])
+  addressId  String?
 
   @@map("real_estates")
 }
 
 model Address {
-  id         String       @id @default(uuid())
-  street     String
-  zipCode    String
-  number     Int
-  city       String
-  state      String
-  property Property?
+  id       String     @id @default(uuid())
+  street   String    @unique
+  zip      Int      @unique
+  city     String  @unique
+  state    String @unique
+  property Property[]
 
   @@map("addresses")
 }
 
-
 model Category {
-  id         String       @id @default(uuid())
-  name       String       @unique
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  property Property[]
+  id         String     @id @default(uuid())
+  name       String     @unique
+  slug       String     @unique
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  properties Property[]
 
   @@map("categories")
 }
-

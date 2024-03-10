@@ -8,6 +8,7 @@ import { PassHasherModule } from './pass-hasher/pass-hasher.module';
 import { UserModule } from './user/user.module';
 import { PropertyModule } from './property/property.module';
 import { CategoryModule } from './category/category.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CategoryModule } from './category/category.module';
     UserModule,
     PropertyModule,
     CategoryModule,
+    AddressModule,
   ],
   controllers: [AppController],
   providers: [AppService],
