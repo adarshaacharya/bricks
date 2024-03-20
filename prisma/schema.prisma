@@ -30,8 +30,8 @@ model User {
 
 model Schedule {
   id     String   @id @default(uuid())
-  date   DateTime
-  hour   String
+  date   DateTime @db.Date
+  time   String
   userId String
   user   User     @relation(fields: [userId], references: [id])
 
@@ -62,10 +62,10 @@ model Property {
 
 model Address {
   id       String     @id @default(uuid())
-  street   String    @unique
-  zip      Int      @unique
-  city     String  @unique
-  state    String @unique
+  street   String     @unique
+  zip      Int        @unique
+  city     String     @unique
+  state    String     @unique
   property Property[]
 
   @@map("addresses")

@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { PropertyModule } from './property/property.module';
 import { CategoryModule } from './category/category.module';
 import { AddressModule } from './address/address.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AddressModule } from './address/address.module';
     PropertyModule,
     CategoryModule,
     AddressModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,10 +1,13 @@
 import { Injectable, UseGuards } from '@nestjs/common';
-import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SlugProvider } from './slug.provider';
 
 @Injectable()
 export class CategoryService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly slugProvider: SlugProvider,
+  ) {}
 
   async getAllCategories() {
     try {
@@ -15,38 +18,6 @@ export class CategoryService {
     }
   }
 
-  private createSlug(name: string) {
-    return name.trim().toLowerCase().replace(/ /g, '-');
-  }
-
-  @UseGuards(AccessTokenGuard)
-  async getOrCreateCategory(name: string) {
-    try {
-      const categorySlug = this.createSlug(name);
-
-      const category = await this.prismaService.category.findUnique({
-        where: {
-          slug: categorySlug,
-        },
-      });
-
-      if (category) {
-        return category;
-      }
-
-      return await this.prismaService.category.create({
-        data: {
-          name,
-          slug: categorySlug,
-        },
-      });
-    } catch (error) {
-      console.log(error);
-      throw new Error(error);
-    }
-  }
-
-  @UseGuards(AccessTokenGuard)
   async createCategory(name: string) {
     try {
       const category = await this.prismaService.category.findUnique({
@@ -59,7 +30,7 @@ export class CategoryService {
         throw new Error('Category already exists');
       }
 
-      const categorySlug = this.createSlug(name);
+      const categorySlug = await this.slugProvider.slugify(name);
 
       return await this.prismaService.category.create({
         data: {
@@ -67,6 +38,28 @@ export class CategoryService {
           slug: categorySlug,
         },
       });
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  }
+
+  async getPropertiesByCategory(slug: string) {
+    try {
+      const category = await this.prismaService.category.findUnique({
+        where: {
+          slug,
+        },
+        include: {
+          properties: true,
+        },
+      });
+
+      if (!category) {
+        throw new Error('Category not found');
+      }
+
+      return category.properties;
     } catch (error) {
       console.log(error);
       throw new Error(error);

@@ -10,6 +10,7 @@ import { SignupDto } from './dtos/signup';
 import { User } from '@prisma/client';
 import { JWTPayload } from './interfaces/jwt.interface';
 import { ConfigService } from '@nestjs/config';
+import { EnvironmentVariables } from 'src/common/config/configuration';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,7 @@ export class AuthService {
     private prisma: PrismaService,
     private readonly passwordHasher: PassHasherService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService<EnvironmentVariables>,
   ) {}
 
   async signup(signupDto: SignupDto) {
@@ -46,17 +47,10 @@ export class AuthService {
       });
       const { password: _, ...userWithoutPassword } = user;
 
-      return {
-        success: true,
-        data: userWithoutPassword,
-        message: 'User created successfully',
-      };
+      return userWithoutPassword;
     } catch (error) {
       console.log(error);
-      return {
-        ok: false,
-        error: 'Could not create user' + error,
-      };
+      throw new Error(error);
     }
   }
 
@@ -65,6 +59,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       iat: Math.floor(Date.now() / 1000),
+      roles: [user.role],
     });
 
     return tokens;
@@ -108,12 +103,13 @@ export class AuthService {
     try {
       const decodedToken = this._decodeToken(refreshToken);
 
-      const { email, id } = decodedToken;
+      const { email, id, roles } = decodedToken;
 
       const tokens = await this._createTokens({
         email,
         id,
         iat: Math.floor(Date.now() / 1000),
+        roles,
       });
 
       return {

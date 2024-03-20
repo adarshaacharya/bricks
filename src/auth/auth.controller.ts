@@ -31,7 +31,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { LoginDto } from './dtos/login';
-import { AuthRequestType } from 'src/types/AuthRequestType';
+import { AuthRequestType } from 'src/common/types/AuthRequestType';
 import { UserService } from 'src/user/user.service';
 
 @ApiTags('Authentication')

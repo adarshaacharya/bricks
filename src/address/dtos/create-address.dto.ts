@@ -6,6 +6,7 @@ export class CreateAddressDto {
     type: String,
     description: 'Property address',
     example: '1234 Elm Street',
+    required: true,
   })
   @IsString()
   street: string;
@@ -14,6 +15,7 @@ export class CreateAddressDto {
     type: String,
     description: 'Property city',
     example: 'Springfield',
+    required: true,
   })
   @IsString()
   city: string;
@@ -22,6 +24,7 @@ export class CreateAddressDto {
     type: String,
     description: 'Property state',
     example: 'IL',
+    required: true,
   })
   @IsString()
   state: string;
@@ -30,6 +33,7 @@ export class CreateAddressDto {
     type: Number,
     description: 'Property zip code',
     example: 62704,
+    required: true,
   })
   @IsNumber()
   zip: number;

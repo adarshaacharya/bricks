@@ -12,7 +12,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
-import { AuthRequestType } from 'src/types/AuthRequestType';
+import { AuthRequestType } from 'src/common/types/AuthRequestType';
 
 @ApiBearerAuth('authorization')
 @Controller('users')
