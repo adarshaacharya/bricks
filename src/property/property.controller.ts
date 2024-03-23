@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { PropertyService } from './property.service';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreatePropertyDto } from './dtos/create-property.dto';
@@ -43,7 +51,7 @@ export class PropertyController {
     const offset = +query.offset || 0;
     const limit = +query.limit || 10;
 
-    if (query) {
+    if (query.categories || query.sold) {
       return {
         success: true,
         message: 'get_properties',
@@ -55,6 +63,19 @@ export class PropertyController {
       success: true,
       message: 'get_properties',
       data: await this.propertyService.getProperties(offset, limit),
+    };
+  }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get property by id',
+    description: 'retrieves a real estate property by id',
+  })
+  async getPropertyById(@Param('id') id: string) {
+    return {
+      success: true,
+      message: 'get_property',
+      data: await this.propertyService.findPropertyById(id),
     };
   }
 }

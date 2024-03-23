@@ -2,9 +2,6 @@ import { UserRole } from '@prisma/client';
 import { IsString, IsEmail, MinLength, IsEnum } from 'class-validator';
 
 export class SignupDto {
-  @IsString()
-  name: string;
-
   @IsEmail()
   email: string;
 

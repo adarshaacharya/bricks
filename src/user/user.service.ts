@@ -12,7 +12,6 @@ export class UserService {
         select: {
           id: true,
           email: true,
-          name: true,
           role: true,
         },
       });
@@ -32,7 +31,6 @@ export class UserService {
         select: {
           id: true,
           email: true,
-          name: true,
           role: true,
         },
       });
@@ -53,7 +51,6 @@ export class UserService {
         select: {
           id: true,
           email: true,
-          name: true,
           role: true,
         },
       });

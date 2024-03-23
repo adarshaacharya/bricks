@@ -1,25 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePropertyDto } from './dtos/create-property.dto';
-import { CategoryService } from 'src/category/category.service';
-import { AddressService } from 'src/address/address.service';
 import { SlugProvider } from 'src/category/slug.provider';
 import { SearchPropertyDto } from './dtos/search-property.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, Property } from '@prisma/client';
+import { CacheSystemService } from 'src/cache-system/cache-system.service';
+import { REDIS_KEYS } from 'src/common/constants';
 
 @Injectable()
 export class PropertyService {
   constructor(
-    private readonly categoryService: CategoryService,
     private readonly prismaService: PrismaService,
-    private readonly addressService: AddressService,
-
+    private readonly cache: CacheSystemService,
     private readonly slugProvider: SlugProvider,
   ) {}
 
   async createProperty(createPropertyDto: CreatePropertyDto) {
     try {
-      return await this.prismaService.property.create({
+      const property = await this.prismaService.property.create({
         data: {
           address: {
             connectOrCreate: {
@@ -58,6 +56,14 @@ export class PropertyService {
           schedules: true,
         },
       });
+
+      if (!property) {
+        throw new Error('Property not created');
+      }
+
+      await this.cache.invalidateCache(REDIS_KEYS.PROPERTY);
+
+      return property;
     } catch (error) {
       console.log(error);
       throw new Error(error);
@@ -65,6 +71,24 @@ export class PropertyService {
   }
 
   async getProperties(offset: number, limit: number) {
+    const cacheKey = `${REDIS_KEYS.PROPERTY}:${offset}:${limit}`;
+
+    const cachedData = await this.cache.get<{
+      properties: Property[];
+      total: number;
+      limit: number;
+      offset: number;
+    }>(cacheKey);
+
+    if (cachedData) {
+      return {
+        data: cachedData.properties,
+        total: cachedData.total,
+        limit: cachedData.limit,
+        offset: cachedData.offset,
+      };
+    }
+
     try {
       const skipCount = Math.floor((+offset || 0) - 1) * (+limit || 10);
 
@@ -81,12 +105,17 @@ export class PropertyService {
         },
       });
 
+      const propertiesCount = await this.prismaService.property.count();
+
       const data = {
         properties,
-        total: await this.prismaService.property.count(),
+        total: propertiesCount,
         limit: limit || 10,
         offset: offset || 0,
       };
+
+      this.cache.set(cacheKey, data);
+
       return data;
     } catch (error) {
       console.log(error);
@@ -96,6 +125,23 @@ export class PropertyService {
 
   async findPropertyByQuery(query: SearchPropertyDto) {
     const { categories, offset, limit, sold } = query;
+    const cacheKey = `${REDIS_KEYS.PROPERTY}:${categories}:${offset}:${limit}:${sold}`;
+
+    const cachedData = await this.cache.get<{
+      properties: Property[];
+      total: number;
+      limit: number;
+      offset: number;
+    }>(cacheKey);
+
+    if (cachedData) {
+      return {
+        data: cachedData.properties,
+        total: cachedData.total,
+        limit: cachedData.limit,
+        offset: cachedData.offset,
+      };
+    }
 
     try {
       const where: Prisma.PropertyWhereInput = {};
@@ -129,14 +175,48 @@ export class PropertyService {
         },
       });
 
+      const totalProperties = await this.prismaService.property.count();
+
       const data = {
         properties,
-        total: await this.prismaService.property.count(),
+        total: totalProperties,
         limit: limit || 10,
         offset: offset || 0,
       };
 
+      this.cache.set(cacheKey, data);
+
       return data;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  }
+
+  async findPropertyById(id: string) {
+    const cacheKey = `${REDIS_KEYS.PROPERTY}:${id}`;
+    const dataCache = await this.cache.get(cacheKey);
+    if (dataCache) return dataCache;
+
+    try {
+      const property = await this.prismaService.property.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          address: true,
+          category: true,
+          schedules: true,
+        },
+      });
+
+      if (!property) {
+        throw new NotFoundException('Property not found');
+      }
+
+      this.cache.set(cacheKey, property);
+
+      return property;
     } catch (error) {
       console.log(error);
       throw new Error(error);
