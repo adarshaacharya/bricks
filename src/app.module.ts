@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -11,6 +11,24 @@ import { CategoryModule } from './category/category.module';
 import { AddressModule } from './address/address.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { CacheSystemModule } from './cache-system/cache-system.module';
+import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
+import { Options } from 'pino-http';
+
+const LoggerModule = PinoLoggerModule.forRoot({
+  pinoHttp: {
+    level: process.env.NODE_ENV !== 'production' ? 'debug' : 'info',
+    transport: {
+      targets: [
+        {
+          target: 'pino-pretty',
+          options: { singleLine: true, colorize: true },
+          level: 'trace',
+        },
+      ],
+    },
+  } as Options,
+  exclude: [{ method: RequestMethod.ALL, path: '/api/health' }],
+});
 
 @Module({
   imports: [
@@ -27,6 +45,7 @@ import { CacheSystemModule } from './cache-system/cache-system.module';
     AddressModule,
     ScheduleModule,
     CacheSystemModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

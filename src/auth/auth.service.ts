@@ -11,6 +11,7 @@ import { User } from '@prisma/client';
 import { JWTPayload } from './interfaces/jwt.interface';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from 'src/common/config/configuration';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,10 @@ export class AuthService {
     private readonly passwordHasher: PassHasherService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<EnvironmentVariables>,
-  ) {}
+    private readonly logger: PinoLogger,
+  ) {
+    logger.setContext(AuthService.name);
+  }
 
   async signup(signupDto: SignupDto) {
     try {
@@ -48,7 +52,8 @@ export class AuthService {
 
       return userWithoutPassword;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
+
       throw new Error(error);
     }
   }
@@ -65,6 +70,9 @@ export class AuthService {
   }
 
   async getAuthenticatedUser(email: string, password: string) {
+    this.logger.info(
+      `Authenticating user with email: ${email} and password : ${password}`,
+    );
     try {
       const user = await this.prisma.user.findUnique({
         where: {
@@ -84,9 +92,10 @@ export class AuthService {
       if (!isPasswordValid) {
         throw new Error('Invalid password');
       }
+
       return user;
     } catch (error) {
-      console.log(error);
+      this.logger.error((error as Error).message);
       return null;
     }
   }
@@ -116,7 +125,7 @@ export class AuthService {
         refresh_token: tokens.refreshToken,
       };
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -135,7 +144,7 @@ export class AuthService {
 
       return this.jwtService.decode(token) as JWTPayload;
     } catch (error) {
-      console.error('Error decoding token:', error);
+      this.logger.error('Error decoding token:', error);
       throw error;
     }
   }
@@ -165,7 +174,7 @@ export class AuthService {
 
       return { accessToken, refreshToken };
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
 
       throw new MethodNotAllowedException('Token creation failed');
     }

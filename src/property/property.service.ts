@@ -6,6 +6,7 @@ import { SearchPropertyDto } from './dtos/search-property.dto';
 import { Prisma, Property } from '@prisma/client';
 import { CacheSystemService } from 'src/cache-system/cache-system.service';
 import { REDIS_KEYS } from 'src/common/constants';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class PropertyService {
@@ -13,7 +14,10 @@ export class PropertyService {
     private readonly prismaService: PrismaService,
     private readonly cache: CacheSystemService,
     private readonly slugProvider: SlugProvider,
-  ) {}
+    private readonly logger: PinoLogger,
+  ) {
+    logger.setContext(PropertyService.name);
+  }
 
   async createProperty(createPropertyDto: CreatePropertyDto) {
     try {
@@ -58,6 +62,7 @@ export class PropertyService {
       });
 
       if (!property) {
+        this.logger.error('Property not created');
         throw new Error('Property not created');
       }
 
@@ -118,7 +123,7 @@ export class PropertyService {
 
       return data;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
       throw new Error(error);
     }
   }
@@ -188,7 +193,8 @@ export class PropertyService {
 
       return data;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
+
       throw new Error(error);
     }
   }
@@ -218,7 +224,7 @@ export class PropertyService {
 
       return property;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
       throw new Error(error);
     }
   }

@@ -1,9 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger as DefaultLogger } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ResponseInterceptor } from './response/response.interceptor';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +21,9 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ResponseInterceptor());
 
+  app.useLogger(app.get(Logger));
+  app.useGlobalInterceptors(new LoggerErrorInterceptor());
+
   const config = new DocumentBuilder()
     .setTitle('Bricks')
     .setDescription('The Bricks API description')
@@ -30,5 +34,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   await app.listen(9000);
+  DefaultLogger.log(`🚀 Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

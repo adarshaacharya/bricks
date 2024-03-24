@@ -7,17 +7,18 @@ services:
     volumes:
       - redis:/data
 
-  redis-commander:
-    container_name: redis-commander
-    image: rediscommander/redis-commander:latest
+  redis-insight:
+    container_name: redisinsight-gui
+    image: redis/redisinsight:latest
+    restart: always
     ports:
-      - '8081:8081'
-    environment:
-      - REDIS_HOSTS=local:redis:6379
+      - '5540:5540'
+    volumes:
+      - redis-insight:/data
     depends_on:
       - redis
 
 volumes:
   redis:
     driver: local
- 
+  redis-insight:
