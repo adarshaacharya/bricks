@@ -9,6 +9,7 @@ import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { UserModule } from 'src/user/user.module';
+import { MailerModule } from 'src/mailer/mailer.module';
 
 @Module({
   providers: [
@@ -23,6 +24,7 @@ import { UserModule } from 'src/user/user.module';
     PassHasherModule,
     UserModule,
     PrismaModule,
+    MailerModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({

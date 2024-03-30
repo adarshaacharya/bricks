@@ -24,8 +24,21 @@ model User {
   updatedAt DateTime   @updatedAt
   schedule  Schedule[]
   profile   Profile?
+  verification       Verification?
+  verified  Boolean    @default(false)
 
   @@map("users")
+}
+
+model Verification {
+  id   String @id @default(uuid())
+  code String
+
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+
+  @@map("verifications")
 }
 
 model Profile {

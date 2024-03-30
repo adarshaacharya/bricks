@@ -58,4 +58,8 @@ export class CacheSystemService {
       throw new HttpException('error deleting keys', HttpStatus.BAD_REQUEST);
     }
   }
+
+  async clearCache() {
+    return await this.redis.flushall();
+  }
 }

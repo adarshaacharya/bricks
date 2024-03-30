@@ -4,4 +4,6 @@ export type EnvironmentVariables = {
   REFRESH_TOKEN_EXPIRATION_TIME: string;
   ACCESS_TOKEN_JWT_KEY: number;
   REFRESH_TOKEN_JWT_KEY: string;
+  SENDGRID_API_KEY: string;
+  SENDGRID_SENDER: string;
 };

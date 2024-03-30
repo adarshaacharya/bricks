@@ -13,6 +13,7 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { CacheSystemModule } from './cache-system/cache-system.module';
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 import { Options } from 'pino-http';
+import { MailerModule } from './mailer/mailer.module';
 
 const LoggerModule = PinoLoggerModule.forRoot({
   pinoHttp: {
@@ -46,6 +47,7 @@ const LoggerModule = PinoLoggerModule.forRoot({
     ScheduleModule,
     CacheSystemModule,
     LoggerModule,
+    MailerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

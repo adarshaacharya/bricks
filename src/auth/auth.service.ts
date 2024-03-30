@@ -12,6 +12,9 @@ import { JWTPayload } from './interfaces/jwt.interface';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from 'src/common/config/configuration';
 import { PinoLogger } from 'nestjs-pino';
+import { MailerService } from 'src/mailer/mailer.service';
+import { v4 as uuidv4 } from 'uuid';
+import { SignupVerifyEmailDto } from 'src/mailer/template.interface';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +24,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<EnvironmentVariables>,
     private readonly logger: PinoLogger,
+    private readonly mailerService: MailerService,
   ) {
     logger.setContext(AuthService.name);
   }
@@ -49,6 +53,22 @@ export class AuthService {
         },
       });
       const { password: _, ...userWithoutPassword } = user;
+
+      const verification = await this.createVerificationCode(user);
+
+      const recipient = { to: [user.email] };
+
+      const mail = new SignupVerifyEmailDto({
+        email: user.email,
+        verificationCode: verification.code,
+      });
+
+      console.log({
+        mail,
+        recipient,
+      });
+
+      await this.mailerService.sendEmailFromTemplate(mail, recipient);
 
       return userWithoutPassword;
     } catch (error) {
@@ -177,6 +197,81 @@ export class AuthService {
       this.logger.error(error);
 
       throw new MethodNotAllowedException('Token creation failed');
+    }
+  }
+
+  async verifyEmail(code?: string) {
+    try {
+      if (!code) {
+        throw new Error('No verification code provided');
+      }
+
+      this.logger.info(`Verifying email with code: ${code}`);
+      const verification = await this.prisma.verification.findFirst({
+        where: {
+          code: code,
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      if (!verification) {
+        throw new Error('Invalid verification code');
+      }
+
+      if (verification.user.verified) {
+        throw new Error('User already verified');
+      }
+
+      this.logger.info(`User found: ${verification.user}`);
+
+      if (verification.expiresAt < new Date()) {
+        throw new Error('Verification code expired');
+      }
+
+      await this.prisma.user.update({
+        where: {
+          id: verification.userId,
+        },
+        data: {
+          verified: true,
+          verification: null,
+        },
+      });
+
+      await this.prisma.verification.delete({
+        where: {
+          id: verification.id,
+        },
+      });
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(error);
+    }
+  }
+
+  async createVerificationCode(user: User) {
+    try {
+      const expiresAt = new Date(Date.now() + 1000 * 60 * 5); // 5 minutes
+      const code = uuidv4(); // Generate a random code
+
+      const otp = await this.prisma.verification.create({
+        data: {
+          userId: user.id,
+          code,
+          expiresAt,
+        },
+      });
+
+      this.logger.info(
+        `Verification code created: ${otp.code} and send to email ${user.email}`,
+      );
+
+      return otp;
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(error);
     }
   }
 }

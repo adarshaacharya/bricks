@@ -1,0 +1,148 @@
+<mjml>
+  <mj-body background-color="#ffffff">
+    <mj-section
+      background-color="#ffffff"
+      padding-bottom="20px"
+      padding-top="20px"
+    >
+      <mj-column width="100%" vertical-align="top">
+        <mj-image
+          href="https://mjml.io"
+          src="https://www.xtrios.com/assets/images/xi.svg"
+          align="center"
+          border="none"
+          width="200px"
+          padding-left="0px"
+          padding-right="0px"
+          padding-bottom="0px"
+          padding-top="0"
+        ></mj-image>
+      </mj-column>
+    </mj-section>
+    <mj-section
+      background-color="#ffffff"
+      padding-bottom="20px"
+      padding-top="20px"
+    >
+      <mj-column width="100%" vertical-align="top">
+        <mj-text
+          align="left"
+          color="#000000"
+          font-family="Open Sans, Arial, sans-serif"
+          font-size="13px"
+          padding-left="25px"
+          padding-right="25px"
+          padding-bottom="0px"
+          padding-top="0"
+        >
+          <p>
+            <span style="color: #004c97; font-weight: 300; font-size: 30px;"
+              >Welcome {{email}} !</span
+            >
+          </p>
+        </mj-text>
+        <mj-text
+          align="justify"
+          color="#000000"
+          font-family="Open Sans, Arial, sans-serif"
+          font-size="15px"
+          padding-left="25px"
+          padding-right="25px"
+          padding-bottom="0px"
+          padding-top="0"
+        >
+          <p>
+            <span style="color: #666666; line-height: 1.2;"
+              >We're excited to have you get started. First, you need to confirm
+              your account. Just press the button below.</span
+            >
+          </p>
+        </mj-text>
+        <mj-button
+          href="#{verificationLink}"
+          background-color="#004C97"
+          color="#E0E0E0"
+          font-size="15px"
+          align="center"
+          vertical-align="middle"
+          border="none"
+          padding="15px 30px"
+          border-radius="3px"
+          href="#"
+          font-family="Open Sans, Arial, sans-serif"
+          padding-left="25px"
+          padding-right="25px"
+          padding-bottom="10px"
+          padding-top="10px"
+          font-weight="400"
+          >Confirm Account</mj-button
+        >
+        <mj-text
+          align="justify"
+          color="#000000"
+          font-family="Open Sans, Arial, sans-serif"
+          font-size="15px"
+          padding-left="25px"
+          padding-right="25px"
+          padding-bottom="0px"
+          padding-top="0"
+        >
+          <p>
+            <span style="color: #666666; line-height: 1.5;"
+              >If that doesn't work, copy and paste the following link in your
+              browser.</span
+            >
+          </p>
+        </mj-text>
+        <mj-text
+          align="justify"
+          font-family="Open Sans, Arial, sans-serif"
+          font-size="15px"
+          padding-left="25px"
+          padding-right="25px"
+          padding-bottom="0px"
+          padding-top="0"
+          ><span style="line-height: 1.5;"
+            ><a href={{verificationLink}} target="_blank" style="color: #004c97;"
+              >{{verificationLink}}</a
+            ></span
+          ></mj-text
+        >
+        <mj-text
+          align="justify"
+          color="#000000"
+          font-family="Open Sans, Arial, sans-serif"
+          font-size="15px"
+          padding-left="25px"
+          padding-right="25px"
+          padding-bottom="0px"
+          padding-top="0"
+        >
+          <p>
+            <span style="color: #666666; line-height: 1.5;"
+              >If you have any questions, just reply to this email, We're always
+              happy to help out.</span
+            >
+          </p>
+        </mj-text>
+        <mj-text
+          align="justify"
+          color="#000000"
+          font-family="Open Sans, Arial, sans-serif"
+          font-size="15px"
+          padding-left="25px"
+          padding-right="25px"
+          padding-bottom="0px"
+          padding-top="0"
+        >
+          <p>
+            <span style="color: #666666; line-height: 1.5;"
+              >Regards,<br />
+              Bricks.</span
+            >
+          </p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

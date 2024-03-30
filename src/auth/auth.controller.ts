@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Request,
   Res,
   UseGuards,
@@ -146,5 +147,14 @@ export class AuthController {
         refresh_token: response.refresh_token,
       },
     });
+  }
+
+  @Get('/verify')
+  @ApiOperation({ summary: 'Verify Email' })
+  @ApiResponse({ status: 200, description: 'Email verified' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  async verifyEmail(@Query('code') code?: string) {
+    this.authService.verifyEmail(code);
   }
 }
