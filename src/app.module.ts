@@ -14,6 +14,7 @@ import { CacheSystemModule } from './cache-system/cache-system.module';
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 import { Options } from 'pino-http';
 import { MailerModule } from './mailer/mailer.module';
+import { UploadsModule } from './dms/dms.module';
 
 const LoggerModule = PinoLoggerModule.forRoot({
   pinoHttp: {
@@ -48,6 +49,7 @@ const LoggerModule = PinoLoggerModule.forRoot({
     CacheSystemModule,
     LoggerModule,
     MailerModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

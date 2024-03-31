@@ -6,4 +6,9 @@ export type EnvironmentVariables = {
   REFRESH_TOKEN_JWT_KEY: string;
   SENDGRID_API_KEY: string;
   SENDGRID_SENDER: string;
+  S3_ENDPOINT: string;
+  S3_ACCESS_KEY: string;
+  S3_SECRET_ACCESS_KEY: string;
+  S3_REGION: string;
+  S3_BUCKET_NAME: string;
 };
