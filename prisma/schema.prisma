@@ -16,16 +16,16 @@ enum UserRole {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
-  password  String
-  role      UserRole   @default(Client)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  schedule  Schedule[]
-  profile   Profile?
-  verification       Verification?
-  verified  Boolean    @default(false)
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String
+  role         UserRole      @default(Client)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  schedule     Schedule[]
+  profile      Profile?
+  verification Verification?
+  verified     Boolean       @default(false)
 
   @@map("users")
 }
@@ -34,23 +34,27 @@ model Verification {
   id   String @id @default(uuid())
   code String
 
-  expiresAt DateTime
+  expiresAt DateTime 
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @unique
+
+  createdAt DateTime @default(now())
+
 
   @@map("verifications")
 }
 
 model Profile {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   firstName String
   lastName  String
   bio       String?
-  birthDate DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  user      User      @relation(fields: [userId], references: [id])
-  userId    String    @unique
+  birthDate DateTime @db.Date
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
 
   @@map("profiles")
 }

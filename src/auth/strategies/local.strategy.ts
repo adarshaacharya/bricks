@@ -13,7 +13,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   to customize the behavior of the passport strategy. 
   In this example, the passport-local strategy by default 
   expects properties called email and password in the request body.
-
    */
   constructor(private authService: AuthService) {
     super({
@@ -27,6 +26,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.verified) {
+      throw new UnauthorizedException(
+        'please verify your email to activate your account',
+      );
     }
 
     return user;

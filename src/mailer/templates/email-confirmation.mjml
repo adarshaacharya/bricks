@@ -36,7 +36,7 @@
           padding-top="0"
         >
           <p>
-            <span style="color: #004c97; font-weight: 300; font-size: 30px;"
+            <span style="color: #004c97; font-weight: 300; font-size: 30px"
               >Welcome {{email}} !</span
             >
           </p>
@@ -52,14 +52,14 @@
           padding-top="0"
         >
           <p>
-            <span style="color: #666666; line-height: 1.2;"
+            <span style="color: #666666; line-height: 1.2"
               >We're excited to have you get started. First, you need to confirm
               your account. Just press the button below.</span
             >
           </p>
         </mj-text>
         <mj-button
-          href="#{verificationLink}"
+          href="{{verificationRedirectLink}}"
           background-color="#004C97"
           color="#E0E0E0"
           font-size="15px"
@@ -88,7 +88,7 @@
           padding-top="0"
         >
           <p>
-            <span style="color: #666666; line-height: 1.5;"
+            <span style="color: #666666; line-height: 1.5"
               >If that doesn't work, copy and paste the following link in your
               browser.</span
             >
@@ -102,9 +102,12 @@
           padding-right="25px"
           padding-bottom="0px"
           padding-top="0"
-          ><span style="line-height: 1.5;"
-            ><a href={{verificationLink}} target="_blank" style="color: #004c97;"
-              >{{verificationLink}}</a
+          ><span style="line-height: 1.5"
+            ><a
+              href="{{verificationRedirectLink}}"
+              target="_blank"
+              style="color: #004c97"
+              >{{verificationRedirectLink}}</a
             ></span
           ></mj-text
         >
@@ -119,7 +122,7 @@
           padding-top="0"
         >
           <p>
-            <span style="color: #666666; line-height: 1.5;"
+            <span style="color: #666666; line-height: 1.5"
               >If you have any questions, just reply to this email, We're always
               happy to help out.</span
             >
@@ -136,7 +139,7 @@
           padding-top="0"
         >
           <p>
-            <span style="color: #666666; line-height: 1.5;"
+            <span style="color: #666666; line-height: 1.5"
               >Regards,<br />
               Bricks.</span
             >

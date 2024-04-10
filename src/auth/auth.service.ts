@@ -1,20 +1,38 @@
 import {
+  BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   MethodNotAllowedException,
+  NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { PassHasherService } from 'src/pass-hasher/pass-hasher.service';
-import { SignupDto } from './dtos/signup';
+import { SignupDto } from './dtos/signup.dto';
 import { User } from '@prisma/client';
 import { JWTPayload } from './interfaces/jwt.interface';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from 'src/common/config/configuration';
 import { PinoLogger } from 'nestjs-pino';
 import { MailerService } from 'src/mailer/mailer.service';
-import { v4 as uuidv4 } from 'uuid';
-import { SignupVerifyEmailDto } from 'src/mailer/template.interface';
+import {
+  SignupVerifyEmailDto,
+  ForgotPasswordMailDto,
+} from 'src/mailer/template.interface';
+import { ForgottenPasswordEmailDto } from './dtos/forgot-password.dto';
+import { ResetPasswordDto } from './dtos/recovery-password.dto';
+import { EMAIL_EXPIRATION_TIME } from './consts';
+
+type VerificationToken = {
+  id: string;
+  email: string;
+};
+
+const ROUTES = {
+  verify: 'auth/signup/verify',
+};
 
 @Injectable()
 export class AuthService {
@@ -54,18 +72,31 @@ export class AuthService {
       });
       const { password: _, ...userWithoutPassword } = user;
 
-      const verification = await this.createVerificationCode(user);
+      const verificationToken = await this.createVerificationToken(user);
+
+      this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          verification: {
+            create: {
+              code: verificationToken,
+              expiresAt: new Date(Date.now() + EMAIL_EXPIRATION_TIME),
+            },
+          },
+        },
+      });
 
       const recipient = { to: [user.email] };
 
+      const link = `${this.configService.get(
+        'CLIENT_DOMAIN',
+      )}/${ROUTES.verify}?token=${verificationToken}`;
+
       const mail = new SignupVerifyEmailDto({
         email: user.email,
-        verificationCode: verification.code,
-      });
-
-      console.log({
-        mail,
-        recipient,
+        verificationRedirectLink: link,
       });
 
       await this.mailerService.sendEmailFromTemplate(mail, recipient);
@@ -129,7 +160,7 @@ export class AuthService {
    */
   async refreshToken(refreshToken: string) {
     try {
-      const decodedToken = this._decodeToken(refreshToken);
+      const decodedToken = this._decodeToken<JWTPayload>(refreshToken);
 
       const { email, id, roles } = decodedToken;
 
@@ -156,13 +187,13 @@ export class AuthService {
    * @param token - The JWT token to be decoded.
    * @returns The decoded payload as an object of type `JWTPayload`.
    */
-  private _decodeToken(token: string): JWTPayload | null {
+  private _decodeToken<T>(token: string): T | null {
     try {
       if (!token) {
         throw new ForbiddenException('No token provided');
       }
 
-      return this.jwtService.decode(token) as JWTPayload;
+      return this.jwtService.decode(token) as T;
     } catch (error) {
       this.logger.error('Error decoding token:', error);
       throw error;
@@ -200,75 +231,213 @@ export class AuthService {
     }
   }
 
-  async verifyEmail(code?: string) {
+  async activateAccountAfterSignup(token?: string) {
     try {
-      if (!code) {
-        throw new Error('No verification code provided');
+      if (!token) {
+        throw new Error('No verification token provided');
       }
 
-      this.logger.info(`Verifying email with code: ${code}`);
-      const verification = await this.prisma.verification.findFirst({
-        where: {
-          code: code,
+      this.logger.info(`Verifying email with token: ${token}`);
+
+      const decodedToken = await this.jwtService.verifyAsync<VerificationToken>(
+        token,
+        {
+          secret: this.configService.get('JWT_CONFIRMATION_TOKEN_SECRET'),
         },
-        include: {
-          user: true,
+      );
+
+      if (!decodedToken) {
+        throw new Error('Invalid verification token');
+      }
+
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: decodedToken.id,
         },
       });
 
-      if (!verification) {
-        throw new Error('Invalid verification code');
+      if (!user) {
+        throw new BadRequestException('User not found');
       }
 
-      if (verification.user.verified) {
-        throw new Error('User already verified');
+      if (user.verified) {
+        throw new BadRequestException('User already verified');
       }
 
-      this.logger.info(`User found: ${verification.user}`);
-
-      if (verification.expiresAt < new Date()) {
-        throw new Error('Verification code expired');
-      }
-
-      await this.prisma.user.update({
+      const updatedUser = await this.prisma.user.update({
         where: {
-          id: verification.userId,
+          id: user.id,
         },
         data: {
           verified: true,
-          verification: null,
         },
       });
 
       await this.prisma.verification.delete({
         where: {
-          id: verification.id,
+          userId: user.id,
+          AND: {
+            code: token,
+          },
         },
       });
+
+      this.logger.info(
+        `User ${user.email} verified successfully and token deleted`,
+      );
+
+      return updatedUser;
     } catch (error) {
       this.logger.error(error);
       throw new Error(error);
     }
   }
 
-  async createVerificationCode(user: User) {
+  async createVerificationToken(user: User) {
     try {
-      const expiresAt = new Date(Date.now() + 1000 * 60 * 5); // 5 minutes
-      const code = uuidv4(); // Generate a random code
-
-      const otp = await this.prisma.verification.create({
-        data: {
-          userId: user.id,
-          code,
-          expiresAt,
-        },
+      const payload: VerificationToken = {
+        email: user.email,
+        id: user.id,
+      };
+      const token = await this.jwtService.signAsync(payload, {
+        secret: this.configService.get('JWT_CONFIRMATION_TOKEN_SECRET'),
+        expiresIn: this.configService.get(
+          'JWT_CONFIRMATION_TOKEN_EXPIRATION_TIME',
+        ),
       });
 
       this.logger.info(
-        `Verification code created: ${otp.code} and send to email ${user.email}`,
+        `Verification code created: ${token} for user ${user.email}`,
       );
 
-      return otp;
+      return token;
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(error);
+    }
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgottenPasswordEmailDto) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          email: forgotPasswordDto.email,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException("User with this email doesn't exist");
+      }
+
+      const verificationToken = await this.createVerificationToken(user);
+
+      const recipient = { to: [user.email] };
+
+      const link = `${this.configService.get(
+        'CLIENT_DOMAIN',
+      )}/auth/forgot-password?token=${verificationToken}`;
+
+      const mail = new ForgotPasswordMailDto({
+        email: user.email,
+        verificationRedirectLink: link,
+      });
+
+      await this.mailerService.sendEmailFromTemplate(mail, recipient);
+
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(error);
+    }
+  }
+
+  // async verifyResetPasswordToken(token?: string) {
+  //   try {
+  //     if (!token) {
+  //       throw new BadRequestException('No token provided in query params');
+  //     }
+  //     const decodedToken = await this.jwtService.verifyAsync<VerificationToken>(
+  //       token,
+  //       {
+  //         secret: this.configService.get('JWT_CONFIRMATION_TOKEN_SECRET'),
+  //       },
+  //     );
+
+  //     if (!decodedToken) {
+  //       throw new UnprocessableEntityException(
+  //         'failed to verify reset password link',
+  //       );
+  //     }
+
+  //     const user = await this.prisma.user.findUnique({
+  //       where: {
+  //         id: decodedToken.id,
+  //       },
+  //     });
+
+  //     if (!user) {
+  //       throw new NotFoundException('User not found');
+  //     }
+
+  //     return user;
+  //   } catch (error) {
+  //     this.logger.error(error);
+  //     throw new Error(error);
+  //   }
+  // }
+
+  async updateForgottenPassword(resetPasswordDto: ResetPasswordDto) {
+    const { confirmPassword, password, token } = resetPasswordDto;
+
+    try {
+      const decodedToken = await this.jwtService.verifyAsync<VerificationToken>(
+        token,
+        {
+          secret: this.configService.get('JWT_CONFIRMATION_TOKEN_SECRET'),
+        },
+      );
+
+      if (!decodedToken) {
+        throw new UnprocessableEntityException(
+          'failed to verify reset password link',
+        );
+      }
+
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: decodedToken.id,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (password !== confirmPassword) {
+        throw new ConflictException('Passwords do not match');
+      }
+
+      const hashedPassword = await this.passwordHasher.hashPassword(password);
+
+      await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+
+      await this.prisma.verification.delete({
+        where: {
+          userId: user.id,
+          AND: {
+            code: token,
+          },
+        },
+      });
+
+      return true;
     } catch (error) {
       this.logger.error(error);
       throw new Error(error);

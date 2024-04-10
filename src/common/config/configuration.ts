@@ -11,4 +11,7 @@ export type EnvironmentVariables = {
   S3_SECRET_ACCESS_KEY: string;
   S3_REGION: string;
   S3_BUCKET_NAME: string;
+  JWT_CONFIRMATION_TOKEN_SECRET: string;
+  JWT_CONFIRMATION_TOKEN_EXPIRATION_TIME: string;
+  CLIENT_DOMAIN: string;
 };

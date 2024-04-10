@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignupDto } from './dtos/signup';
+import { SignupDto } from './dtos/signup.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { Response } from 'express';
@@ -31,9 +31,11 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
-import { LoginDto } from './dtos/login';
+import { LoginDto } from './dtos/login.dto';
 import { AuthRequestType } from 'src/common/types/AuthRequestType';
 import { UserService } from 'src/user/user.service';
+import { ForgottenPasswordEmailDto } from './dtos/forgot-password.dto';
+import { ResetPasswordDto } from './dtos/recovery-password.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -149,12 +151,33 @@ export class AuthController {
     });
   }
 
-  @Get('/verify')
+  @Get('/signup/verify')
   @ApiOperation({ summary: 'Verify Email' })
-  @ApiResponse({ status: 200, description: 'Email verified' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 403, description: 'Forbidden' })
-  async verifyEmail(@Query('code') code?: string) {
-    this.authService.verifyEmail(code);
+  async verifyEmail(@Query('token') token?: string) {
+    return this.authService.activateAccountAfterSignup(token);
+  }
+
+  @Post('/forgot-password')
+  @ApiOperation({ summary: 'Forgot Password' })
+  async forgotPassword(
+    @Body()
+    forgotPassowrdDto: ForgottenPasswordEmailDto,
+  ) {
+    return this.authService.forgotPassword(forgotPassowrdDto);
+  }
+
+  // @Get('/forgot-password/verify')
+  // @ApiOperation({ summary: 'Verify Email' })
+  // async verifyResetPasswordToken(@Query('token') token?: string) {
+  //   return this.authService.verifyResetPasswordToken(token);
+  // }
+
+  @Post('/reset-password')
+  @ApiOperation({ summary: 'Reset Password' })
+  async resetPassword(
+    @Body()
+    resetPasswordDto: ResetPasswordDto,
+  ) {
+    return this.authService.updateForgottenPassword(resetPasswordDto);
   }
 }

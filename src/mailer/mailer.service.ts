@@ -41,41 +41,6 @@ export class MailerService {
     }
   }
 
-  // async sendEmailVerification(email: string, code: string) {
-  //   try {
-  //     const url = `http://localhost:9000/api/v1/auth/verify?code=${code}`;
-  //     const templatePath = path.resolve(
-  //       __dirname,
-  //       './templates',
-  //       'email-confirmation.mjml',
-  //     );
-
-  //     const fileRead = readFileSync(templatePath, {
-  //       encoding: 'utf8',
-  //     });
-  //     const context = {
-  //       verificationLink: url,
-  //     };
-  //     const template = Handlebars.compile(fileRead.toString())(context);
-
-  //     const htmlOutput = mjml(template).html;
-
-  //     const newEmail: sg.MailDataRequired = {
-  //       to: email,
-  //       from: this.emailSender,
-  //       subject: 'Email Verification',
-  //       html: htmlOutput,
-  //     };
-
-  //     return this.sendEmail({
-  //       ...newEmail,
-  //     });
-  //   } catch (error) {
-  //     this.logger.warn(`Error sending email`, error);
-  //     throw new ForbiddenException(error);
-  //   }
-  // }
-
   async send(
     email: Email,
     settings: sg.MailDataRequired['mailSettings'] = {},

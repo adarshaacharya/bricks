@@ -23,8 +23,15 @@ export interface BuiltTemplate {
 }
 
 export class SignupVerifyEmailDto extends EmailTemplate<{
-  verificationCode: string;
+  verificationRedirectLink: string; // redirect to frontend with token
   email: string;
 }> {
   name = TemplateTypeEnum.emailConfirmation;
+}
+
+export class ForgotPasswordMailDto extends EmailTemplate<{
+  verificationRedirectLink: string;
+  email: string;
+}> {
+  name = TemplateTypeEnum.forgotPassword;
 }
