@@ -15,6 +15,7 @@ import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 import { Options } from 'pino-http';
 import { MailerModule } from './mailer/mailer.module';
 import { UploadsModule } from './dms/dms.module';
+import { HealthModule } from './health/health.module';
 
 const LoggerModule = PinoLoggerModule.forRoot({
   pinoHttp: {
@@ -50,6 +51,7 @@ const LoggerModule = PinoLoggerModule.forRoot({
     LoggerModule,
     MailerModule,
     UploadsModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

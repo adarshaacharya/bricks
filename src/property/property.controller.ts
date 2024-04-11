@@ -25,11 +25,7 @@ export class PropertyController {
     description: 'Create property to get listed on real estate site',
   })
   async createProperty(@Body() createPropertyDto: CreatePropertyDto) {
-    return {
-      success: true,
-      message: 'create_property',
-      data: await this.propertyService.createProperty(createPropertyDto),
-    };
+    return await this.propertyService.createProperty(createPropertyDto);
   }
 
   @Get()
@@ -52,18 +48,10 @@ export class PropertyController {
     const limit = +query.limit || 10;
 
     if (query.categories || query.sold) {
-      return {
-        success: true,
-        message: 'get_properties',
-        data: await this.propertyService.findPropertyByQuery(query),
-      };
+      return await this.propertyService.findPropertyByQuery(query);
     }
 
-    return {
-      success: true,
-      message: 'get_properties',
-      data: await this.propertyService.getProperties(offset, limit),
-    };
+    return await this.propertyService.getProperties(offset, limit);
   }
 
   @Get(':id')
@@ -72,10 +60,6 @@ export class PropertyController {
     description: 'retrieves a real estate property by id',
   })
   async getPropertyById(@Param('id') id: string) {
-    return {
-      success: true,
-      message: 'get_property',
-      data: await this.propertyService.findPropertyById(id),
-    };
+    return this.propertyService.findPropertyById(id);
   }
 }
