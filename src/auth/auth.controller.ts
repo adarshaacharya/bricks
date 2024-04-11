@@ -187,4 +187,11 @@ export class AuthController {
   ) {
     return this.authService.changePassword(resetPasswordDto, req.user.id);
   }
+
+  @Post('/:userId/resend-verification')
+  @UseGuards(AccessTokenGuard)
+  @ApiOperation({ summary: 'Resend Verification Email' })
+  async resendVerificationEmail(@Param('userId') userId: string) {
+    return this.authService.resendVerificationEmail(userId);
+  }
 }

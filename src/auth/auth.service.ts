@@ -71,7 +71,30 @@ export class AuthService {
       });
       const { password: _, ...userWithoutPassword } = user;
 
+      await this.sendAccountVerificationEmail(user.email);
+
+      return userWithoutPassword;
+    } catch (error) {
+      this.logger.error(error);
+
+      throw new Error(error);
+    }
+  }
+
+  async sendAccountVerificationEmail(email: string) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
       const code = uuidv4();
+
       const verificationToken =
         await this.verificationTokenService.createVerificationToken(
           user.email,
@@ -99,10 +122,9 @@ export class AuthService {
 
       await this.mailerService.sendEmailFromTemplate(mail, recipient);
 
-      return userWithoutPassword;
+      return true;
     } catch (error) {
       this.logger.error(error);
-
       throw new Error(error);
     }
   }
@@ -381,6 +403,24 @@ export class AuthService {
       this.logger.info(`Password changed for user ${user.email}`);
 
       return true;
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(error);
+    }
+  }
+
+  async resendVerificationEmail(userId: string) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return this.sendAccountVerificationEmail(user.email);
     } catch (error) {
       this.logger.error(error);
       throw new Error(error);
