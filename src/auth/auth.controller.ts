@@ -36,6 +36,7 @@ import { AuthRequestType } from 'src/common/types/AuthRequestType';
 import { UserService } from 'src/user/user.service';
 import { ForgottenPasswordEmailDto } from './dtos/forgot-password.dto';
 import { ResetPasswordDto } from './dtos/recovery-password.dto';
+import { ChangePasswordDto } from './dtos/change-passowrd.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -167,12 +168,6 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPassowrdDto);
   }
 
-  // @Get('/forgot-password/verify')
-  // @ApiOperation({ summary: 'Verify Email' })
-  // async verifyResetPasswordToken(@Query('token') token?: string) {
-  //   return this.authService.verifyResetPasswordToken(token);
-  // }
-
   @Post('/reset-password')
   @ApiOperation({ summary: 'Reset Password' })
   async resetPassword(
@@ -180,5 +175,16 @@ export class AuthController {
     resetPasswordDto: ResetPasswordDto,
   ) {
     return this.authService.updateForgottenPassword(resetPasswordDto);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Post('change-password')
+  @ApiOperation({ summary: 'Change Password' })
+  async changePassword(
+    @Body()
+    resetPasswordDto: ChangePasswordDto,
+    @Request() req: AuthRequestType,
+  ) {
+    return this.authService.changePassword(resetPasswordDto, req.user.id);
   }
 }

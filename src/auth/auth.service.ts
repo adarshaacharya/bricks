@@ -25,6 +25,7 @@ import { EMAIL_EXPIRATION_TIME } from './consts';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtTokenService } from './jwt-token/jwt-token.service';
 import { VerificationTokenService } from './verification-token/verification-token.service';
+import { ChangePasswordDto } from './dtos/change-passowrd.dto';
 
 const CLIENT_ROUTES = {
   verify: '/signup/verify',
@@ -331,6 +332,53 @@ export class AuthService {
       });
 
       this.logger.info(`New password set for user ${user.email}`);
+
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(error);
+    }
+  }
+
+  async changePassword(changePasswordDto: ChangePasswordDto, userId: string) {
+    const { confirmPassword, password, oldPassword } = changePasswordDto;
+
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const isOldPasswordValid = await this.passwordHasher.comparePassword(
+        oldPassword,
+        user.password,
+      );
+
+      if (!isOldPasswordValid) {
+        throw new ForbiddenException('Invalid old password');
+      }
+
+      if (password !== confirmPassword) {
+        throw new ConflictException('Passwords do not match');
+      }
+
+      const hashedPassword = await this.passwordHasher.hashPassword(password);
+
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+
+      this.logger.info(`Password changed for user ${user.email}`);
 
       return true;
     } catch (error) {

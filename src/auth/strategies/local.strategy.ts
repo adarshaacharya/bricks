@@ -28,12 +28,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (!user.verified) {
-      throw new UnauthorizedException(
-        'please verify your email to activate your account',
-      );
-    }
-
     return user;
   }
 }
