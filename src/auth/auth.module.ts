@@ -10,6 +10,8 @@ import { ConfigService } from '@nestjs/config';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { UserModule } from 'src/user/user.module';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { VerificationTokenService } from './verification-token/verification-token.service';
+import { JwtTokenService } from './jwt-token/jwt-token.service';
 
 @Module({
   providers: [
@@ -18,6 +20,8 @@ import { MailerModule } from 'src/mailer/mailer.module';
     AccessTokenStrategy,
     ConfigService,
     RefreshTokenStrategy,
+    VerificationTokenService,
+    JwtTokenService,
   ],
   controllers: [AuthController],
   imports: [

@@ -16,30 +16,29 @@ enum UserRole {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  email        String        @unique
+  id           String         @id @default(uuid())
+  email        String         @unique
   password     String
-  role         UserRole      @default(Client)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  role         UserRole       @default(Client)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   schedule     Schedule[]
   profile      Profile?
-  verification Verification?
-  verified     Boolean       @default(false)
+  verification Verification[]
+  verified     Boolean        @default(false)
 
   @@map("users")
 }
 
 model Verification {
   id   String @id @default(uuid())
-  code String
+  code String @unique
 
-  expiresAt DateTime 
+  expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id])
-  userId    String   @unique
+  userId    String
 
   createdAt DateTime @default(now())
-
 
   @@map("verifications")
 }

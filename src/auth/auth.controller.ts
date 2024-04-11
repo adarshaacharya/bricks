@@ -4,8 +4,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
-  Query,
   Request,
   Res,
   UseGuards,
@@ -151,10 +151,11 @@ export class AuthController {
     });
   }
 
-  @Get('/signup/verify')
+  // note : there is difference between token and code, token = whole base64 encoded string, code = only the code inside decoded token
+  @Get('/signup/verify/:code')
   @ApiOperation({ summary: 'Verify Email' })
-  async verifyEmail(@Query('token') token?: string) {
-    return this.authService.activateAccountAfterSignup(token);
+  async activateAccountAfterSignup(@Param('code') code: string) {
+    return this.authService.activateAccountAfterSignup(code);
   }
 
   @Post('/forgot-password')
