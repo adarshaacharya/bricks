@@ -21,23 +21,15 @@ export class DmsService {
     private readonly configService: ConfigService<EnvironmentVariables>,
     private readonly logger: PinoLogger,
   ) {
-    const s3_endpoint = this.configService.get('S3_ENDPOINT');
     const s3_region = this.configService.get('S3_REGION');
 
-    if (!s3_endpoint || !s3_region) {
-      this.logger.warn(
-        'S3_ENDPOINT or S3_REGION not found in environment variables',
-      );
-      throw new Error(
-        'S3_ENDPOINT or S3_REGION not found in environment variables',
-      );
+    if (!s3_region) {
+      this.logger.warn('S3_REGION not found in environment variables');
+      throw new Error('S3_REGION not found in environment variables');
     }
 
     this.client = new S3Client({
-      endpoint: this.configService.get('S3_ENDPOINT'),
-      region:
-        this.configService.get('S3_REGION') ??
-        getRegionFromEndpoint(this.configService.get('S3_ENDPOINT')),
+      region: this.configService.get('S3_REGION'),
       credentials: {
         accessKeyId: this.configService.get('S3_ACCESS_KEY'),
         secretAccessKey: this.configService.get('S3_SECRET_ACCESS_KEY'),
