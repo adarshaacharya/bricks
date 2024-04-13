@@ -39,6 +39,8 @@ import { ResetPasswordDto } from './dtos/recovery-password.dto';
 import { ChangePasswordDto } from './dtos/change-passowrd.dto';
 import { GoogleOauthGuard } from './guards/google-oath.guard';
 import { ENV } from 'src/common/config/configuration';
+import { User } from '@prisma/client';
+import { GithubOauthGuard } from './guards/github-oath.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -70,7 +72,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto, description: 'User Data' })
   @ApiConsumes('multipart/form-data', 'application/json')
   async login(@Request() req, @Res() res: Response) {
-    const response = await this.authService.login(req.user);
+    const response = await this.authService.login(req.user as User);
 
     res.cookie(ACCESS_TOKEN, response.accessToken, {
       maxAge: ACESS_TOKEN_COOKIE_MAX_AGE,
@@ -201,7 +203,44 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
   async googleAuthCallback(@Request() req, @Res() res: Response) {
-    const response = await this.authService.login(req.user);
+    const response = await this.authService.login(req.user as User);
+
+    res.cookie(ACCESS_TOKEN, response.accessToken, {
+      maxAge: ACESS_TOKEN_COOKIE_MAX_AGE,
+      secure: true,
+      httpOnly: true,
+      sameSite: 'none',
+    });
+
+    res.cookie(REFRESH_TOKEN, response.refreshToken, {
+      maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE,
+      secure: true,
+      httpOnly: true,
+      sameSite: 'none',
+    });
+
+    return res.redirect(ENV.CLIENT_AUTH_REDIRECT_URL);
+  }
+
+  @ApiOperation({
+    summary: 'Github Login Redirect',
+    description: 'Redirect to github login page i.e. first step',
+  })
+  @Get('github')
+  @UseGuards(GithubOauthGuard)
+  async githubAuth(@Res() res: Response) {
+    res.send();
+  }
+
+  // this will take req user and generate jwt token and redirect to frontend
+  @ApiOperation({
+    summary: 'Github Login Callback',
+    description: 'Callback URL for github login',
+  })
+  @Get('github/callback')
+  @UseGuards(GithubOauthGuard)
+  async githubAuthCallback(@Request() req, @Res() res: Response) {
+    const response = await this.authService.login(req.user as User);
 
     res.cookie(ACCESS_TOKEN, response.accessToken, {
       maxAge: ACESS_TOKEN_COOKIE_MAX_AGE,

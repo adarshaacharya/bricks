@@ -13,12 +13,14 @@ import { MailerModule } from 'src/mailer/mailer.module';
 import { VerificationTokenService } from './verification-token/verification-token.service';
 import { JwtTokenService } from './jwt-token/jwt-token.service';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { GithubStrategy } from './strategies/github.strategy';
 
 @Module({
   providers: [
     AuthService,
     LocalStrategy,
     GoogleStrategy,
+    GithubStrategy,
     AccessTokenStrategy,
     ConfigService,
     RefreshTokenStrategy,

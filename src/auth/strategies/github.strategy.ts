@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { PinoLogger } from 'nestjs-pino';
-import { Profile, Strategy } from 'passport-google-oauth20';
+import { Profile, Strategy } from 'passport-github';
 import { EnvironmentVariables } from 'src/common/config/configuration';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from '../auth.service';
+import { ConfigService } from '@nestjs/config';
 import { AuthProvider, UserRole } from '@prisma/client';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(Strategy) {
+export class GithubStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly logger: PinoLogger,
     private readonly userService: UserService,
@@ -17,22 +17,19 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     private readonly authService: AuthService,
   ) {
     super({
-      clientID: configService.get('GOOGLE_OAUTH_CLIENT_ID'),
-      clientSecret: configService.get('GOOGLE_OAUTH_CLIENT_SECRET'),
-      callbackURL: configService.get('GOOGLE_OAUTH_CALLBACK_URL'),
-      scope: ['email', 'profile'],
+      clientID: configService.get('GITHUB_OAUTH_CLIENT_ID'),
+      clientSecret: configService.get('GITHUB_OAUTH_CLIENT_SECRET'),
+      callbackURL: configService.get('GITHUB_OAUTH_CALLBACK_URL'),
+      scope: ['read:user', 'user:email'],
     });
-    this.logger.setContext(GoogleStrategy.name);
+    this.logger.setContext(GithubStrategy.name);
   }
 
-  async validate(
-    _accessToken: string,
-    _refreshToken: string,
-    profile: Profile,
-  ) {
-    const { id, emails, photos, name, displayName } = profile;
-    this.logger.assign({ googleId: id });
-    this.logger.info('Finding user with google id');
+  async validate(accessToken: string, _refreshToken: string, profile: Profile) {
+    const { id, username, emails, name, displayName } = profile;
+
+    this.logger.assign({ githubId: id, githubUsername: username });
+    this.logger.info('Finding user with github id');
     const existingUser = await this.userService.findByProviderId(id);
 
     if (!existingUser) {
@@ -41,7 +38,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       const newUser = await this.authService.signup({
         email: emails?.[0].value || '',
         providerId: id,
-        provider: AuthProvider.Google,
+        provider: AuthProvider.Github,
         role: UserRole.Client, // The users role is set to client by default
       });
 
@@ -52,23 +49,28 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
         provider: newUser.provider,
       });
 
+      const [firstName, lastName] = name?.givenName?.split(' ') || [
+        displayName,
+        '',
+      ];
+
       await this.userService.createUserProfile(
         {
-          firstName: name?.givenName || displayName,
-          lastName: name?.familyName || '',
-          avatar: photos?.[0].value,
+          firstName: firstName,
+          lastName: lastName,
+          avatar: profile.photos?.[0].value,
         },
         newUser.id,
       );
 
-      this.logger.info('New User profile created', {
+      this.logger.info('User profile created', {
         userId: newUser.id,
         firstName: name?.givenName || displayName,
         lastName: name?.familyName || '',
-        avatar: photos?.[0].value,
+        avatar: profile.photos?.[0].value,
       });
 
-      return newUser; // req.user will see this object
+      return newUser; // req.user will be set to this object
     }
 
     this.logger.info('User found', {
