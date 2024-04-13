@@ -15,10 +15,18 @@ enum UserRole {
   Admin
 }
 
+enum AuthProvider {
+  Local
+  Google
+  Facebook
+  Github
+  Twitter
+}
+
 model User {
   id           String         @id @default(uuid())
   email        String         @unique
-  password     String
+  password     String? // password is required for local provider but not for social providers
   role         UserRole       @default(Client)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -26,6 +34,8 @@ model User {
   profile      Profile?
   verification Verification[]
   verified     Boolean        @default(false)
+  provider     AuthProvider   @default(Local)
+  providerId   String?
 
   @@map("users")
 }
@@ -48,7 +58,7 @@ model Profile {
   firstName String
   lastName  String
   bio       String?
-  birthDate DateTime @db.Date
+  birthDate DateTime? @db.Date
   avatar    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

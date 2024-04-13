@@ -37,6 +37,8 @@ import { UserService } from 'src/user/user.service';
 import { ForgottenPasswordEmailDto } from './dtos/forgot-password.dto';
 import { ResetPasswordDto } from './dtos/recovery-password.dto';
 import { ChangePasswordDto } from './dtos/change-passowrd.dto';
+import { GoogleOauthGuard } from './guards/google-oath.guard';
+import { ENV } from 'src/common/config/configuration';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -84,11 +86,7 @@ export class AuthController {
       sameSite: 'none',
     });
 
-    return res.json({
-      message: 'Logged in successfully',
-      success: true,
-      data: response,
-    });
+    return response;
   }
 
   @UseGuards(AccessTokenGuard)
@@ -98,11 +96,7 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async me(@Request() req: AuthRequestType) {
     const user = await this.userService.getUserById(req.user.id);
-    return {
-      message: 'User info',
-      data: user,
-      success: true,
-    };
+    return user;
   }
 
   @UseGuards(AccessTokenGuard)
@@ -113,9 +107,7 @@ export class AuthController {
     res.clearCookie(REFRESH_TOKEN);
     res.clearCookie(ACCESS_TOKEN);
 
-    return res
-      .status(HttpStatus.OK)
-      .json({ message: 'Logged out successfully' });
+    return res.status(HttpStatus.OK);
   }
 
   @UseGuards(RefreshTokenGuard)
@@ -142,14 +134,10 @@ export class AuthController {
       sameSite: 'none',
     });
 
-    return res.json({
-      message: 'token_refreshed',
-      success: true,
-      data: {
-        access_token: response.access_token,
-        refresh_token: response.refresh_token,
-      },
-    });
+    return {
+      access_token: response.access_token,
+      refresh_token: response.refresh_token,
+    };
   }
 
   // note : there is difference between token and code, token = whole base64 encoded string, code = only the code inside decoded token
@@ -193,5 +181,42 @@ export class AuthController {
   @ApiOperation({ summary: 'Resend Verification Email' })
   async resendVerificationEmail(@Param('userId') userId: string) {
     return this.authService.resendVerificationEmail(userId);
+  }
+
+  @ApiOperation({
+    summary: 'Google Login Redirect',
+    description: 'Redirect to google login page i.e. first step',
+  })
+  @Get('google')
+  @UseGuards(GoogleOauthGuard)
+  async googleAuth(@Res() res: Response) {
+    res.send();
+  }
+
+  // this will take req user and generate jwt token and redirect to frontend
+  @ApiOperation({
+    summary: 'Google Login Callback',
+    description: 'Callback URL for google login',
+  })
+  @Get('google/callback')
+  @UseGuards(GoogleOauthGuard)
+  async googleAuthCallback(@Request() req, @Res() res: Response) {
+    const response = await this.authService.login(req.user);
+
+    res.cookie(ACCESS_TOKEN, response.accessToken, {
+      maxAge: ACESS_TOKEN_COOKIE_MAX_AGE,
+      secure: true,
+      httpOnly: true,
+      sameSite: 'none',
+    });
+
+    res.cookie(REFRESH_TOKEN, response.refreshToken, {
+      maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE,
+      secure: true,
+      httpOnly: true,
+      sameSite: 'none',
+    });
+
+    return res.redirect(ENV.CLIENT_AUTH_REDIRECT_URL);
   }
 }

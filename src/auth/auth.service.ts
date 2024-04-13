@@ -9,7 +9,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PassHasherService } from 'src/pass-hasher/pass-hasher.service';
 import { SignupDto } from './dtos/signup.dto';
-import { User } from '@prisma/client';
+import { AuthProvider, User } from '@prisma/client';
 import { JWTPayload } from './interfaces/jwt.interface';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from 'src/common/config/configuration';
@@ -48,6 +48,21 @@ export class AuthService {
 
   async signup(signupDto: SignupDto) {
     try {
+      // If the user is signing up with a provider, we don't need to hash the password, since password isn't provided
+      if (signupDto.provider !== AuthProvider.Local) {
+        const user = await this.prisma.user.create({
+          data: {
+            email: signupDto.email,
+            role: signupDto.role,
+            provider: signupDto.provider,
+            providerId: signupDto.providerId,
+            verified: true,
+          },
+        });
+
+        return user;
+      }
+
       const { email, password, role } = signupDto;
 
       const exists = await this.prisma.user.findUnique({
@@ -130,6 +145,7 @@ export class AuthService {
   }
 
   async login(user: User) {
+    console.log({ user });
     const tokens = await this.jwtTokenService._createTokens({
       id: user.id,
       email: user.email,

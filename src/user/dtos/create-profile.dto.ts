@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsISO8601, IsString, IsUrl, Length } from 'class-validator';
+import {
+  IsISO8601,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+} from 'class-validator';
 
 export class CreateProfileDto {
   @ApiProperty({
@@ -28,9 +34,10 @@ export class CreateProfileDto {
     example: 'I am a software engineer',
     required: false,
   })
+  @IsOptional()
   @IsString()
   @Length(1, 255)
-  bio: string;
+  bio?: string;
 
   @ApiProperty({
     type: Date,
@@ -41,7 +48,8 @@ export class CreateProfileDto {
   @IsISO8601({
     strict: true,
   })
-  birthDate: Date;
+  @IsOptional()
+  birthDate?: Date;
 
   @ApiProperty({
     type: String,
@@ -50,5 +58,6 @@ export class CreateProfileDto {
     required: false,
   })
   @IsUrl()
+  @IsOptional()
   avatar: string;
 }

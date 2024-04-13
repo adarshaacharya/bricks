@@ -12,11 +12,13 @@ import { UserModule } from 'src/user/user.module';
 import { MailerModule } from 'src/mailer/mailer.module';
 import { VerificationTokenService } from './verification-token/verification-token.service';
 import { JwtTokenService } from './jwt-token/jwt-token.service';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
   providers: [
     AuthService,
     LocalStrategy,
+    GoogleStrategy,
     AccessTokenStrategy,
     ConfigService,
     RefreshTokenStrategy,

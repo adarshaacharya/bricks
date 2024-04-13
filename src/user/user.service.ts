@@ -49,6 +49,20 @@ export class UserService {
     }
   }
 
+  async findByProviderId(providerId: string) {
+    try {
+      const user = await this.prismaService.user.findFirst({
+        where: {
+          providerId,
+        },
+      });
+      return user;
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(error);
+    }
+  }
+
   async deleteUser(id: string) {
     try {
       await this.prismaService.user.delete({

@@ -4,13 +4,16 @@ import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { REFRESH_TOKEN } from '../consts';
 import { Injectable } from '@nestjs/common';
+import { EnvironmentVariables } from 'src/common/config/configuration';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService<EnvironmentVariables>,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         RefreshTokenStrategy.extractJWT,

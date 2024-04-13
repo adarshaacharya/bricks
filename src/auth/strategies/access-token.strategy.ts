@@ -52,5 +52,6 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
       );
 
     return decodedJwtPayload; // this will get attached to the request object as req.user and can be accessed in the route handler
+    // req.user will be set to this object
   }
 }
