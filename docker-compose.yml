@@ -1,4 +1,17 @@
 services:
+  postgres:
+    container_name: postgres
+    image: postgres:alpine
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bricks # dburl="postgresql://postgres:postgres@localhost:5432/bricks?schema=public"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
   redis:
     container_name: cache
     image: redis:alpine
@@ -22,3 +35,4 @@ volumes:
   redis:
     driver: local
   redis-insight:
+  postgres-data:
