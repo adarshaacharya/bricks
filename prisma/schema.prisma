@@ -11,8 +11,9 @@ datasource db {
 }
 
 enum UserRole {
-  Client
-  Admin
+  Client  // customer
+  Admin // owner or broker 
+  SuperAdmin // admin
 }
 
 enum AuthProvider {

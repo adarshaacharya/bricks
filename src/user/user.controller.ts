@@ -113,7 +113,7 @@ export class UserController {
   }
 
   @UseGuards(AccessTokenGuard, RolesGuard)
-  @Roles(UserRole.Admin) // should be superadmin to assign role to user
+  @Roles(UserRole.SuperAdmin)
   @Patch(':id/role')
   @ApiOperation({
     summary: 'Update user role',
