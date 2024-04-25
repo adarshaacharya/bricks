@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class ForgottenPasswordEmailDto {
-  @ApiProperty()
-  @Expose()
+  @ApiProperty({
+    example: 'email@gmail.com',
+  })
   @IsNotEmpty()
   @IsEmail()
   public readonly email: string;

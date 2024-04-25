@@ -34,11 +34,7 @@ export class UserController {
     @Request() req: AuthRequestType,
     @Body() data: CreateProfileDto,
   ) {
-    return {
-      success: true,
-      message: 'create_user',
-      data: await this.userService.createUserProfile(data, req.user.id),
-    };
+    return await this.userService.createUserProfile(data, req.user.id);
   }
 
   @UseGuards(AccessTokenGuard)
@@ -52,11 +48,7 @@ export class UserController {
     @Param('id') id: string,
     @Body() data: CreateProfileDto,
   ) {
-    return {
-      success: true,
-      message: 'update_user',
-      data: await this.userService.updateUserProfile(data, id, req.user.id),
-    };
+    return await this.userService.updateUserProfile(data, id, req.user.id);
   }
 
   @Get()
@@ -65,11 +57,7 @@ export class UserController {
     description: 'Get all users queries',
   })
   async getUsers() {
-    return {
-      success: true,
-      message: 'get_users',
-      data: await this.userService.getUsers(),
-    };
+    return await this.userService.getUsers();
   }
 
   @UseGuards(AccessTokenGuard)
@@ -79,11 +67,7 @@ export class UserController {
     description: 'Get current user data',
   })
   async me(@Request() req: AuthRequestType) {
-    return {
-      success: true,
-      message: 'me',
-      data: await this.userService.getUserById(req.user.id),
-    };
+    return await this.userService.getUserById(req.user.id);
   }
 
   @Get(':id')
@@ -92,11 +76,7 @@ export class UserController {
     description: 'Get user data by id',
   })
   async getUserById(@Param('id') id: string) {
-    return {
-      success: true,
-      message: 'get_user',
-      data: await this.userService.getUserById(id),
-    };
+    return await this.userService.getUserById(id);
   }
 
   @Delete(':id')
@@ -105,11 +85,7 @@ export class UserController {
     description: 'Delete user by id',
   })
   async deleteUser(@Param('id') id: string) {
-    return {
-      success: true,
-      message: 'delete_user',
-      data: await this.userService.deleteUser(id),
-    };
+    return await this.userService.deleteUser(id);
   }
 
   @UseGuards(AccessTokenGuard, RolesGuard)
@@ -120,10 +96,6 @@ export class UserController {
     description: 'Update user role by id',
   })
   async updateUserRole(@Param('id') id: string, @Body('role') role: UserRole) {
-    return {
-      success: true,
-      message: 'update_user_role',
-      data: await this.userService.updateUserRole(role, id),
-    };
+    return await this.userService.updateUserRole(role, id);
   }
 }

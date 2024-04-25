@@ -1,5 +1,35 @@
+# Bricks
+
+Bricks is a full-stack application for rental properties. It is built with Next.js, Nest.js, and Prisma ORM.
+
+# Features
+
+- User Authentication with Google and Github or Email and Password
+- Three user roles : Super Admin, Admin, and User
+- Super Admin can manage all the users and properties
+- Admin can manage the properties (CRUD operations)
+- User can view the properties and schedule meetings with the Admin to view the properties
+
+# Running the application locally
+
+- To run the application locally, you need to have Docker installed on your machine. Run the following command to start the docker container:
+
 ```sh
-docker compose up
+    docker compose up
+```
+
+- Copy the `.env.example` file to `.env` and update the environment variables accordingly.
+
+- Reset the database schema and seed the database with the following command:
+
+```sh
+    npx prisma migrate reset
+```
+
+- Start the backend server with the following command:
+
+```sh
+    pnpm run start:dev
 ```
 
 # Integrating Google Auth
@@ -55,3 +85,7 @@ Here's is how the flow looks like:
 - Backend will create a JWT token and send it back to the frontend in cookies
 - Backend will redirec the user to `localhost:3000` with the JWT token in the cookies
 - Frontend will store the in the cookies and use it for further requests
+
+# Commands
+
+Database seeding happens in two ways with Prisma ORM: manually with `prisma db seed` and automatically in `prisma migrate dev` and prisma migrate reset.

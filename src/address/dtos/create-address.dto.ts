@@ -37,4 +37,13 @@ export class CreateAddressDto {
   })
   @IsNumber()
   zip: number;
+
+  @ApiProperty({
+    type: String,
+    description: 'Property country',
+    example: 'USA',
+    required: true,
+  })
+  @IsString()
+  country: string;
 }

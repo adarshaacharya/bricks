@@ -11,7 +11,7 @@ datasource db {
 }
 
 enum UserRole {
-  Client  // customer
+  Client // customer
   Admin // owner or broker 
   SuperAdmin // admin
 }
@@ -55,16 +55,16 @@ model Verification {
 }
 
 model Profile {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   firstName String
   lastName  String
   bio       String?
   birthDate DateTime? @db.Date
   avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @unique
 
   @@map("profiles")
 }
@@ -86,11 +86,14 @@ model Schedule {
 }
 
 model Property {
-  id        String   @id @default(uuid())
-  sold      Boolean  @default(false)
-  size      Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  price       Float
+  sold        Boolean  @default(false)
+  size        Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   categoryId String
   category   Category   @relation(fields: [categoryId], references: [id])
@@ -102,11 +105,16 @@ model Property {
 }
 
 model Address {
-  id       String     @id @default(uuid())
-  street   String     @unique
-  zip      Int        @unique
-  city     String     @unique
-  state    String     @unique
+  id      String @id @default(uuid())
+  street  String
+  city    String
+  state   String
+  country String
+  zip     Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   property Property[]
 
   @@map("addresses")

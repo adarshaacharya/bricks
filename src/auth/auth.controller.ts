@@ -23,10 +23,9 @@ import {
 } from './consts';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import {
-  ApiBadRequestResponse,
   ApiBody,
-  ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiSecurity,
   ApiTags,
@@ -52,11 +51,7 @@ export class AuthController {
 
   @Post('/signup')
   @ApiOperation({ summary: 'Sign Up User' })
-  @ApiResponse({ status: 201, description: 'User created successfully' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 403, description: 'Email already register' })
   @ApiBody({ type: SignupDto, description: 'User Data' })
-  @ApiConsumes('multipart/form-data')
   async signup(@Body() signupDto: SignupDto) {
     return this.authService.signup(signupDto);
   }
@@ -66,12 +61,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('/login')
   @ApiOperation({ summary: 'Sign in' })
-  @ApiBadRequestResponse({ description: 'Invalid request body' })
-  @ApiResponse({ status: 200, description: 'Successful login' })
-  @ApiResponse({ status: 403, description: 'Forbidden - User not logged' })
-  @ApiBody({ type: LoginDto, description: 'User Data' })
-  @ApiConsumes('multipart/form-data', 'application/json')
-  async login(@Request() req, @Res() res: Response) {
+  async login(
+    @Request() req,
+    @Body() _loginDto: LoginDto,
+    @Res() res: Response,
+  ) {
     const response = await this.authService.login(req.user as User);
 
     res.cookie(ACCESS_TOKEN, response.accessToken, {
@@ -94,8 +88,6 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @Get()
   @ApiOperation({ summary: 'User Info' })
-  @ApiResponse({ status: 200, description: 'User info' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async me(@Request() req: AuthRequestType) {
     const user = await this.userService.getUserById(req.user.id);
     return user;
@@ -116,8 +108,6 @@ export class AuthController {
   @Post('/refresh_token')
   @ApiOperation({ summary: 'Refresh Token' })
   @ApiSecurity('refresh_token')
-  @ApiResponse({ status: 200, description: 'Token refreshed', type: String })
-  @ApiResponse({ status: 401, description: 'Unauthorized from refresh' })
   async refreshToken(
     @Body('refresh_token') refreshToken: string,
     @Res() res: Response,
@@ -145,6 +135,7 @@ export class AuthController {
   // note : there is difference between token and code, token = whole base64 encoded string, code = only the code inside decoded token
   @Get('/signup/verify/:code')
   @ApiOperation({ summary: 'Verify Email' })
+  @ApiParam({ name: 'code', description: 'Verification Code' })
   async activateAccountAfterSignup(@Param('code') code: string) {
     return this.authService.activateAccountAfterSignup(code);
   }
@@ -181,6 +172,7 @@ export class AuthController {
   @Post('/:userId/resend-verification')
   @UseGuards(AccessTokenGuard)
   @ApiOperation({ summary: 'Resend Verification Email' })
+  @ApiParam({ name: 'userId', description: 'User Id' })
   async resendVerificationEmail(@Param('userId') userId: string) {
     return this.authService.resendVerificationEmail(userId);
   }

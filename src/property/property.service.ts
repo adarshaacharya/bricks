@@ -23,6 +23,10 @@ export class PropertyService {
     try {
       const property = await this.prismaService.property.create({
         data: {
+          title: createPropertyDto.title,
+          description: createPropertyDto.description,
+          price: createPropertyDto.price,
+          sold: createPropertyDto.sold,
           address: {
             connectOrCreate: {
               where: {
@@ -30,12 +34,14 @@ export class PropertyService {
                 state: createPropertyDto.address.state,
                 street: createPropertyDto.address.street,
                 zip: createPropertyDto.address.zip,
+                country: createPropertyDto.address.country,
               },
               create: {
                 city: createPropertyDto.address.city,
                 state: createPropertyDto.address.state,
                 street: createPropertyDto.address.street,
                 zip: createPropertyDto.address.zip,
+                country: createPropertyDto.address.country,
               },
             },
           },
