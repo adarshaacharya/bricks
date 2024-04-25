@@ -1,0 +1,714 @@
+{
+	"info": {
+		"_postman_id": "97733fcb-4e6e-429a-87d5-1894fcdb5b45",
+		"name": "Bricks",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28131129"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"mazako\",\n    \"email\" : \"villain@yopmail.com\",\n    \"password\" : \"test123\",\n    \"role\" : \"Admin\",\n    \"provider\" : \"Local\"\n} ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/signup",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "singn-in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n     \"email\" : \"villain@yopmail.com\",\n    \"password\" : \"test123\"\n} ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh_token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkYXJzaGFAZ21haWwuY29tIiwiaWQiOiI1Nzk0MWZlNC03NDI2LTRjNmMtYjE5Mi02MzZhZmUyZDJkMzIiLCJpYXQiOjE3MDg4ODAxNzgsImV4cCI6MTcwOTQ4NDk3OH0.mY9KRpO281Q3VsPObQjWINru0XUO6rCeP8D3WmEpQlk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkYXJzaGFAZ21haWwuY29tIiwiaWQiOiI1Nzk0MWZlNC03NDI2LTRjNmMtYjE5Mi02MzZhZmUyZDJkMzIiLCJpYXQiOjE3MDg4ODAxNzgsImV4cCI6MTcwOTQ4NDk3OH0.mY9KRpO281Q3VsPObQjWINru0XUO6rCeP8D3WmEpQlk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/refresh_token",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"refresh_token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "auth",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkYXJzaGFAZ21haWwuY29tIiwiaWQiOiI1Nzk0MWZlNC03NDI2LTRjNmMtYjE5Mi02MzZhZmUyZDJkMzIiLCJpYXQiOjE3MDg4ODAxNzgsImV4cCI6MTcwOTQ4NDk3OH0.mY9KRpO281Q3VsPObQjWINru0XUO6rCeP8D3WmEpQlk",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/auth",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forgot-password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"chomu@yopmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/forgot-password",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verify-email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/auth/signup/verify/22e33cb0-e4b1-4026-8c24-bc337f75c730",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"signup",
+								"verify",
+								"22e33cb0-e4b1-4026-8c24-bc337f75c730"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset-forgot-pw",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\" : \"de49fb48-a3b6-4746-81dd-90b7b4b49b7b\",\n    \"password\" : \"money123\",\n    \"confirmPassword\" : \"money123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/reset-password",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change-password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"oldPassword\" : \"test123\",\n    \"confirmPassword\" : \"hero12213\",\n    \"password\" : \"hero12213\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/change-password",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/users",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-user-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/users/57941fe4-7426-4c6c-b192-636afe2d2d32",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"57941fe4-7426-4c6c-b192-636afe2d2d32"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-user-by-id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/users/57941fe4-7426-4c6c-b192-636afe2d2d32",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"57941fe4-7426-4c6c-b192-636afe2d2d32"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-user-by-id",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"Rohan Mishra\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/users/ead00d5f-b52c-4d5b-83c0-c8d81cc693a1",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"ead00d5f-b52c-4d5b-83c0-c8d81cc693a1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/users/me",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-profile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\" : \"Rohit\",\n    \"lastName\" : \"Chauchan\",\n    \"birthDate\" : \"2022-04-19\",\n    \"avatar\" : \"https://demo-bricks-bucket.s3.amazonaws.com/75783352-b023-4fb8-8a9a-4ef8ee620670\",\n    \"bio\" : \"yoo bio\"\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/users/profile",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "categories",
+			"item": [
+				{
+					"name": "create-category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"BORO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/categories",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all-categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories-properties",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/categories/land/properties",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"categories",
+								"land",
+								"properties"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "property",
+			"item": [
+				{
+					"name": "properties",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/properties",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"properties"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "categories[]",
+									"value": "PLAZA",
+									"disabled": true
+								},
+								{
+									"key": "sold",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-property",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"value\": 432432,\n    \"size\": 323,\n    \"sold\": false,\n    \"address\": {\n        \"street\": \"Elm\",\n        \"city\": \"KTm\",\n        \"state\": \"GJ\",\n        \"zip\": 3123\n    },\n    \"category\": \"PARKING\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/properties",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-property",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/properties/c88936e3-751f-4ab8-879c-70d1e4b8eb88",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"properties",
+								"c88936e3-751f-4ab8-879c-70d1e4b8eb88"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "address",
+			"item": [
+				{
+					"name": "create-address",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"street\": \"Elm\",\n    \"city\": \"KTm\",\n    \"state\": \"GJ\",\n    \"zip\": 3123\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/addresses",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"addresses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "schedules",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"propertyId\" :\"c88936e3-751f-4ab8-879c-70d1e4b8eb88\",\n    \"time\" : \"02:00\",\n    \"date\" : \"2025-01-01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/schedules",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"schedules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "property-schedules",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/schedules/property/c88936e3-751f-4ab8-879c-70d1e4b8eb88",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"schedules",
+								"property",
+								"c88936e3-751f-4ab8-879c-70d1e4b8eb88"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "mail",
+			"item": [
+				{
+					"name": "send-email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/auth?token=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "dms",
+			"item": [
+				{
+					"name": "post-file",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/adarsha/Downloads/download.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/dms/file",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dms",
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post-files",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/Users/adarsha/Downloads/pngegg.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/dms/files",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"dms",
+								"files"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

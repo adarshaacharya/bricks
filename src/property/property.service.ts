@@ -30,6 +30,7 @@ export class PropertyService {
           address: {
             connectOrCreate: {
               where: {
+                id: createPropertyDto.address.id,
                 city: createPropertyDto.address.city,
                 state: createPropertyDto.address.state,
                 street: createPropertyDto.address.street,

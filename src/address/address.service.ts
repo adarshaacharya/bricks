@@ -10,6 +10,7 @@ export class AddressService {
     try {
       const existingAddress = await this.prismaService.address.findUnique({
         where: {
+          id: address.id,
           street: address.street,
           city: address.city,
           state: address.state,

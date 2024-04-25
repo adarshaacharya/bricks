@@ -1,6 +1,6 @@
 # Bricks
 
-Bricks is a full-stack application for rental properties. It is built with Next.js, Nest.js, and Prisma ORM.
+Bricks is a backend api for a real estate marketplace.
 
 # Features
 
@@ -31,6 +31,12 @@ Bricks is a full-stack application for rental properties. It is built with Next.
 ```sh
     pnpm run start:dev
 ```
+
+Server will start on `http://localhost:9000`
+
+- You can import postman collection from the [docs/postman](docs/postman/) folder to test the API endpoints.
+
+- View the API documentation at `http://localhost:9000/api/v1/docs`
 
 # Integrating Google Auth
 

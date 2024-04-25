@@ -11,6 +11,30 @@ import { CreateAddressDto } from 'src/address/dtos/create-address.dto';
 
 export class CreatePropertyDto {
   @ApiProperty({
+    type: String,
+    description: 'Property title',
+    example: 'New property',
+  })
+  @IsString()
+  title: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'Property description',
+    example: 'This is a new property',
+  })
+  @IsString()
+  description: string;
+
+  @ApiProperty({
+    type: Number,
+    description: 'Property price',
+    example: 100000,
+  })
+  @IsNumber()
+  price: number;
+
+  @ApiProperty({
     type: Number,
     description: 'Property value',
     example: 100000,
