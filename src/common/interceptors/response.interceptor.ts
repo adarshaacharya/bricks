@@ -9,10 +9,26 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { format } from 'date-fns';
+import { Reflector } from '@nestjs/core';
+import { RESPONSE_MESSAGE_METADATA } from '../decorators/response-message.decorator';
+
+export type Response<T> = {
+  status: boolean;
+  statusCode: number;
+  path: string;
+  message: string;
+  data: T;
+  timestamp: string;
+};
 
 @Injectable()
-export class ResponseInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
+  constructor(private reflector: Reflector) {}
+
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<Response<T>> {
     return next.handle().pipe(
       map((res: unknown) => this.responseHandler(res, context)),
       catchError((err: HttpException) =>
@@ -46,11 +62,16 @@ export class ResponseInterceptor implements NestInterceptor {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
     const statusCode = response.statusCode;
+    const message =
+      this.reflector.get<string>(
+        RESPONSE_MESSAGE_METADATA,
+        context.getHandler(),
+      ) || 'success';
 
     return {
       status: true,
       path: request.url,
-      message: 'success',
+      message: message,
       statusCode,
       data: res,
       timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),

@@ -35,11 +35,6 @@ export class UserService {
         where: {
           id,
         },
-        select: {
-          id: true,
-          email: true,
-          role: true,
-        },
       });
       return user;
     } catch (error) {

@@ -17,6 +17,7 @@ import {
   PaginatedPropertyResponseDto,
   PropertyResponseDto,
 } from './dtos/property-response.dto';
+import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
 
 @ApiTags('Properties')
 @Controller('properties')
@@ -49,6 +50,7 @@ export class PropertyController {
     type: Number,
   })
   @Serialize(PaginatedPropertyResponseDto)
+  @ResponseMessage('Properties retrieved successfully')
   async getProperties(
     @Query() query: SearchPropertyDto,
   ): Promise<PaginatedPropertyResponseDto> {
