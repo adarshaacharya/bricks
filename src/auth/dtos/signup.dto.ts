@@ -1,11 +1,17 @@
-import { ApiProperty, PickType, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  ApiResponseProperty,
+} from '@nestjs/swagger';
 import { AuthProvider, UserRole } from '@prisma/client';
+import { Expose } from 'class-transformer';
 import {
   IsString,
   IsEmail,
   MinLength,
   IsEnum,
   IsOptional,
+  IsUUID,
 } from 'class-validator';
 
 export class SignupDto {
@@ -51,4 +57,28 @@ export class SignupDto {
   provider?: AuthProvider;
 }
 
-export class SignupResponseDto extends PickType(SignupDto, ['email', 'role']) {}
+export class SignupResponseDto {
+  @ApiResponseProperty({
+    example: 'djaskjdasd',
+    type: String,
+  })
+  @Expose()
+  @IsUUID()
+  id: string;
+
+  @ApiResponseProperty({
+    example: 'user@email.com',
+    type: String,
+  })
+  @Expose()
+  @IsEmail()
+  email: string;
+
+  @ApiResponseProperty({
+    enum: UserRole,
+    example: UserRole.Client,
+    type: String,
+  })
+  @Expose()
+  role: UserRole;
+}

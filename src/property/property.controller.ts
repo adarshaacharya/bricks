@@ -12,6 +12,11 @@ import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreatePropertyDto } from './dtos/create-property.dto';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 import { SearchPropertyDto } from './dtos/search-property.dto';
+import { Serialize } from 'src/common/decorators/serialize.decorator';
+import {
+  PaginatedPropertyResponseDto,
+  PropertyResponseDto,
+} from './dtos/property-response.dto';
 
 @ApiTags('Properties')
 @Controller('properties')
@@ -43,9 +48,12 @@ export class PropertyController {
     required: false,
     type: Number,
   })
-  async getProperties(@Query() query: SearchPropertyDto) {
-    const offset = +query.offset || 0;
-    const limit = +query.limit || 10;
+  @Serialize(PaginatedPropertyResponseDto)
+  async getProperties(
+    @Query() query: SearchPropertyDto,
+  ): Promise<PaginatedPropertyResponseDto> {
+    const offset = query.offset || 0;
+    const limit = query.limit || 10;
 
     if (query.categories || query.sold) {
       return await this.propertyService.findPropertyByQuery(query);
@@ -59,6 +67,7 @@ export class PropertyController {
     summary: 'Get property by id',
     description: 'retrieves a real estate property by id',
   })
+  @Serialize(PropertyResponseDto)
   async getPropertyById(@Param('id') id: string) {
     return this.propertyService.findPropertyById(id);
   }

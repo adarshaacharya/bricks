@@ -1,4 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class LoginDto {
@@ -16,4 +17,22 @@ export class LoginDto {
   @IsString()
   @MinLength(6)
   password: string;
+}
+
+export class LoginResponseDto {
+  @ApiResponseProperty({
+    type: String,
+    example: 'eyJhbGciasdassd ...',
+  })
+  @IsString()
+  @Expose()
+  accessToken: string;
+
+  @ApiResponseProperty({
+    type: String,
+    example: 'eyJhbGciasdassd ...',
+  })
+  @IsString()
+  @Expose()
+  refreshToken: string;
 }

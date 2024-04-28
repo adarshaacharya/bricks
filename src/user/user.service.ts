@@ -17,10 +17,9 @@ export class UserService {
   async getUsers() {
     try {
       const users = await this.prismaService.user.findMany({
-        select: {
-          id: true,
-          email: true,
-          role: true,
+        include: {
+          profile: true,
+          schedule: true,
         },
       });
       return users;
@@ -70,7 +69,7 @@ export class UserService {
           id,
         },
       });
-      return null;
+      return true;
     } catch (error) {
       this.logger.error(error);
       throw new Error(error);
@@ -121,13 +120,13 @@ export class UserService {
 
   async updateUserProfile(
     updateProfileDto: UpdateProfileDto,
-    id: string,
-    userId: string,
+    profileId: string,
+    currentUserId: string,
   ) {
     try {
       const user = await this.prismaService.user.findUnique({
         where: {
-          id: userId,
+          id: currentUserId,
         },
         include: {
           profile: true,
@@ -142,11 +141,11 @@ export class UserService {
         throw new Error('Profile not found');
       }
 
-      if (user.profile.userId !== id) {
+      if (user.profile.id !== profileId) {
         throw new Error('Profile not found');
       }
 
-      this.logger.info(`Updating profile for user ${id}`);
+      this.logger.info(`Updating profile for user ${currentUserId}`);
 
       const profile = await this.prismaService.profile.update({
         where: {
@@ -157,6 +156,9 @@ export class UserService {
           birthDate: updateProfileDto.birthDate
             ? new Date(updateProfileDto.birthDate)
             : null,
+        },
+        include: {
+          user: true,
         },
       });
 

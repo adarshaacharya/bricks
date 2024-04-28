@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignupDto } from './dtos/signup.dto';
+import { SignupDto, SignupResponseDto } from './dtos/signup.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { Response } from 'express';
@@ -30,16 +30,18 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
-import { LoginDto } from './dtos/login.dto';
-import { AuthRequestType } from 'src/common/types/AuthRequestType';
+import { LoginDto, LoginResponseDto } from './dtos/login.dto';
+import { AuthRequestType } from 'src/common/types/auth-reqest.types';
 import { UserService } from 'src/user/user.service';
 import { ForgottenPasswordEmailDto } from './dtos/forgot-password.dto';
 import { ResetPasswordDto } from './dtos/recovery-password.dto';
-import { ChangePasswordDto } from './dtos/change-passowrd.dto';
+import { ChangePasswordDto } from './dtos/change-password.dto';
 import { GoogleOauthGuard } from './guards/google-oath.guard';
 import { ENV } from 'src/common/config/configuration';
 import { User } from '@prisma/client';
 import { GithubOauthGuard } from './guards/github-oath.guard';
+import { Serialize } from 'src/common/decorators/serialize.decorator';
+import { plainToClass } from 'class-transformer';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -52,7 +54,8 @@ export class AuthController {
   @Post('/signup')
   @ApiOperation({ summary: 'Sign Up User' })
   @ApiBody({ type: SignupDto, description: 'User Data' })
-  async signup(@Body() signupDto: SignupDto) {
+  @Serialize(SignupResponseDto)
+  async signup(@Body() signupDto: SignupDto): Promise<SignupResponseDto> {
     return this.authService.signup(signupDto);
   }
 
@@ -61,6 +64,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('/login')
   @ApiOperation({ summary: 'Sign in' })
+  @ApiBody({ type: LoginDto, description: 'User Data' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successful login',
+    type: LoginResponseDto,
+  })
   async login(
     @Request() req,
     @Body() _loginDto: LoginDto,
@@ -82,7 +91,13 @@ export class AuthController {
       sameSite: 'none',
     });
 
-    return response;
+    // since we have to do res.send so can't use Serialize decorator
+    const mappedResponse = plainToClass(LoginResponseDto, response, {
+      excludeExtraneousValues: true,
+    });
+
+    res.status(HttpStatus.OK).send(mappedResponse);
+    return;
   }
 
   @UseGuards(AccessTokenGuard)

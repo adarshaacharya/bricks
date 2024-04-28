@@ -25,7 +25,8 @@ import { EMAIL_EXPIRATION_TIME } from './consts';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtTokenService } from './jwt-token/jwt-token.service';
 import { VerificationTokenService } from './verification-token/verification-token.service';
-import { ChangePasswordDto } from './dtos/change-passowrd.dto';
+import { ChangePasswordDto } from './dtos/change-password.dto';
+import { LoginResponseDto } from './dtos/login.dto';
 
 const CLIENT_ROUTES = {
   verify: '/signup/verify',
@@ -84,11 +85,10 @@ export class AuthService {
           role,
         },
       });
-      const { password: _, ...userWithoutPassword } = user;
 
       await this.sendAccountVerificationEmail(user.email);
 
-      return userWithoutPassword;
+      return user;
     } catch (error) {
       this.logger.error(error);
 
@@ -144,8 +144,7 @@ export class AuthService {
     }
   }
 
-  async login(user: User) {
-    console.log({ user });
+  async login(user: User): Promise<LoginResponseDto> {
     const tokens = await this.jwtTokenService._createTokens({
       id: user.id,
       email: user.email,

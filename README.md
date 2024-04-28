@@ -38,6 +38,8 @@ Server will start on `http://localhost:9000`
 
 - View the API documentation at `http://localhost:9000/api/v1/docs`
 
+- View redis cache via redis commander at `http://localhost:5540/`
+
 # Integrating Google Auth
 
 To generate the env variable likes `CLIENT_ID` and `CLIENT_SECRET`, you need to create a project in Google Cloud Platform and enable the Google Auth API.

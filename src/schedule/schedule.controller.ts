@@ -10,7 +10,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ScheduleService } from './schedule.service';
 import { CreateScheduleDto } from './dtos/create-schedule.dto';
-import { AuthRequestType } from 'src/common/types/AuthRequestType';
+import { AuthRequestType } from 'src/common/types/auth-reqest.types';
 import { AccessTokenGuard } from 'src/auth/guards/access-token.guard';
 
 @ApiTags('Schedule')

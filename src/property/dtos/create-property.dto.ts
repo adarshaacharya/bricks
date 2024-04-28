@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsNumber,
@@ -16,8 +16,10 @@ export class CreatePropertyDto {
     example: 'New property',
   })
   @IsString()
+  @Expose()
   title: string;
 
+  @Expose()
   @ApiProperty({
     type: String,
     description: 'Property description',
@@ -26,6 +28,7 @@ export class CreatePropertyDto {
   @IsString()
   description: string;
 
+  @Expose()
   @ApiProperty({
     type: Number,
     description: 'Property price',
@@ -34,14 +37,7 @@ export class CreatePropertyDto {
   @IsNumber()
   price: number;
 
-  @ApiProperty({
-    type: Number,
-    description: 'Property value',
-    example: 100000,
-  })
-  @IsNumber()
-  value: number;
-
+  @Expose()
   @ApiProperty({
     type: Number,
     description: 'Property area',
@@ -50,6 +46,7 @@ export class CreatePropertyDto {
   @IsNumber()
   size: number;
 
+  @Expose()
   @ApiProperty({
     type: Boolean,
     description: 'Property is sold',
@@ -64,6 +61,7 @@ export class CreatePropertyDto {
   })
   @IsObject()
   @ValidateNested()
+  @Expose()
   @Type(() => CreateAddressDto)
   address: CreateAddressDto;
 
@@ -73,5 +71,6 @@ export class CreatePropertyDto {
     example: 'Real Estate',
   })
   @IsString()
+  @Expose()
   category: string;
 }

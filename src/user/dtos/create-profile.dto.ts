@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 import {
   IsISO8601,
   IsOptional,
@@ -8,6 +9,7 @@ import {
 } from 'class-validator';
 
 export class CreateProfileDto {
+  @Expose()
   @ApiProperty({
     type: String,
     description: 'First name',
@@ -18,6 +20,7 @@ export class CreateProfileDto {
   @Length(1, 255)
   firstName: string;
 
+  @Expose()
   @ApiProperty({
     type: String,
     description: 'Last name',
@@ -28,6 +31,7 @@ export class CreateProfileDto {
   @Length(1, 255)
   lastName: string;
 
+  @Expose()
   @ApiProperty({
     type: String,
     description: 'bio',
@@ -39,6 +43,7 @@ export class CreateProfileDto {
   @Length(1, 255)
   bio?: string;
 
+  @Expose()
   @ApiProperty({
     type: Date,
     description: 'birth date',
@@ -51,6 +56,7 @@ export class CreateProfileDto {
   @IsOptional()
   birthDate?: Date;
 
+  @Expose()
   @ApiProperty({
     type: String,
     description: 'avatar',
@@ -60,4 +66,14 @@ export class CreateProfileDto {
   @IsUrl()
   @IsOptional()
   avatar: string;
+}
+
+export class CreateProfileResponseDto extends CreateProfileDto {
+  @ApiProperty({
+    type: String,
+    description: 'id',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @Expose()
+  id: string;
 }

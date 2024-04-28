@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { format } from 'date-fns';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
@@ -36,7 +37,7 @@ export class ResponseInterceptor implements NestInterceptor {
       path: request.url,
       message: exception.message,
       result: exception,
-      timeStamp: new Date().toISOString(),
+      timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
     });
   }
 
@@ -49,9 +50,10 @@ export class ResponseInterceptor implements NestInterceptor {
     return {
       status: true,
       path: request.url,
+      message: 'success',
       statusCode,
       data: res,
-      timeStamp: new Date().toISOString(),
+      timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
     };
   }
 }
