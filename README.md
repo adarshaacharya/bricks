@@ -97,3 +97,22 @@ Here's is how the flow looks like:
 # Commands
 
 Database seeding happens in two ways with Prisma ORM: manually with `prisma db seed` and automatically in `prisma migrate dev` and prisma migrate reset.
+
+# Building Docker Image
+
+To build the docker image, run the following command:
+
+```sh
+    docker build -t bricks .
+    docker images # to view the image
+```
+
+# Running the container using the image
+
+To run the container using the image, run the following command:
+
+```sh
+docker run -p 9000:9000 bricks --env ACCESS_TOKEN_JWT_KEY="secret" --env REFRESH_TOKEN_JWT_KEY="secret" --env S3_REGION="ap-south-1" # ... other env variables
+
+    docker ps # to view the running container
+```
