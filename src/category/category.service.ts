@@ -1,6 +1,6 @@
 import { Injectable, UseGuards } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { SlugProvider } from './slug.provider';
+import { PrismaService } from '../../src/prisma/prisma.service';
 
 @Injectable()
 export class CategoryService {

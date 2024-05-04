@@ -28,7 +28,7 @@ export class DmsService {
     }
 
     this.client = new S3Client({
-      region: this.configService.get('S3_REGION'),
+      region: s3_region,
       credentials: {
         accessKeyId: this.configService.get('S3_ACCESS_KEY'),
         secretAccessKey: this.configService.get('S3_SECRET_ACCESS_KEY'),
@@ -45,7 +45,13 @@ export class DmsService {
    * @returns  A promise that resolves to an object containing the URL and resource type of the
    *   uploaded file.
    */
-  async uploadSinglePublicFile(file: Express.Multer.File) {
+  async uploadSingleFile({
+    file,
+    isPublic = true,
+  }: {
+    file: Express.Multer.File;
+    isPublic: boolean;
+  }) {
     try {
       const key = `${uuidv4()}`;
       const command = new PutObjectCommand({
@@ -53,7 +59,8 @@ export class DmsService {
         Key: key,
         Body: file.buffer,
         ContentType: file.mimetype,
-        ACL: 'public-read',
+        ACL: isPublic ? 'public-read' : 'private',
+
         Metadata: {
           originalName: file.originalname,
         },
@@ -66,7 +73,11 @@ export class DmsService {
       );
 
       return {
-        url: (await this.getFileUrl(key)).url,
+        url: isPublic
+          ? (await this.getFileUrl(key)).url
+          : (await this.getPresignedSignedUrl(key)).url,
+        key,
+        isPublic,
       };
     } catch (error) {
       this.logger.error(error);
@@ -99,7 +110,7 @@ export class DmsService {
   /**
    * @description Get a signed URL for a file in S3, its not being used in the project, just added for reference
    */
-  async getSignedUrl(key: string) {
+  async getPresignedSignedUrl(key: string) {
     try {
       const command = new GetObjectCommand({
         Bucket: this.bucketName,
@@ -107,7 +118,7 @@ export class DmsService {
       });
 
       const url = await getSignedUrl(this.client, command, {
-        expiresIn: 60 * 60 * 24,
+        expiresIn: 60 * 60 * 24, // 24 hours
       });
 
       return { url };

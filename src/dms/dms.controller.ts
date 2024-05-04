@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   FileTypeValidator,
   Get,
@@ -43,6 +44,9 @@ export class DmsController {
           type: 'string',
           format: 'binary',
         },
+        isPublic: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -61,8 +65,10 @@ export class DmsController {
       }),
     )
     file: Express.Multer.File,
+    @Body('isPublic') isPublic: string,
   ) {
-    return this.dmsService.uploadSinglePublicFile(file);
+    const isPublicBool = isPublic === 'true' ? true : false;
+    return this.dmsService.uploadSingleFile({ file, isPublic: isPublicBool });
   }
 
   @UseGuards(AccessTokenGuard)
@@ -118,12 +124,23 @@ export class DmsController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(UserRole.Admin)
-  @Post('/delete/:key')
+  @Post('/:key')
   @ApiOperation({
     summary: 'Delete file',
     description: 'Delete file from S3 bucket',
   })
   async deleteFile(@Param('key') key: string) {
     return this.dmsService.deleteFile(key);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get signed URL',
+    description: 'Get a signed URL for a file in S3',
+  })
+  @UseGuards(AccessTokenGuard)
+  @Get('/signed-url/:key')
+  async getSingedUrl(@Param('key') key: string) {
+    return this.dmsService.getPresignedSignedUrl(key);
   }
 }

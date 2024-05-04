@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../src/prisma/prisma.service';
 import { CreatePropertyDto } from './dtos/create-property.dto';
 import { SlugProvider } from 'src/category/slug.provider';
 import { SearchPropertyDto } from './dtos/search-property.dto';
